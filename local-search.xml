@@ -4,19 +4,6 @@
   
   
   <entry>
-    <title>test</title>
-    <link href="/2023/07/22/test/"/>
-    <url>/2023/07/22/test/</url>
-    
-    <content type="html"><![CDATA[<p>this is test for img</p><p><img src="/test.png" alt="test"></p>]]></content>
-    
-    
-    
-  </entry>
-  
-  
-  
-  <entry>
     <title>Smartbi内置用户绕过浅析</title>
     <link href="/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/"/>
     <url>/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/</url>
