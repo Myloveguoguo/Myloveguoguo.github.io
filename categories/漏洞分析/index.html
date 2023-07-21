@@ -18,8 +18,8 @@
   
     <meta name="description" content="Yuanyi的博客">
 <meta property="og:type" content="website">
-<meta property="og:title" content="Myloveguoguo">
-<meta property="og:url" content="http://example.com/index.html">
+<meta property="og:title" content="分类 - 漏洞分析">
+<meta property="og:url" content="http://example.com/categories/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/index.html">
 <meta property="og:site_name" content="Myloveguoguo">
 <meta property="og:description" content="Yuanyi的博客">
 <meta property="og:locale" content="zh_CN">
@@ -28,7 +28,7 @@
   
   
   
-  <title>Myloveguoguo</title>
+  <title>分类 - 漏洞分析 - Myloveguoguo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -82,7 +82,7 @@
   <header>
     
 
-<div class="header-inner" style="height: 100vh;">
+<div class="header-inner" style="height: 60vh;">
   <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
   <div class="container">
     <a class="navbar-brand" href="/">
@@ -188,17 +188,13 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Yuanyi ’s blog"></span>
+            <span id="subtitle" data-typed-text="分类 - 漏洞分析"></span>
           
         </div>
 
         
       </div>
 
-      
-        <div class="scroll-down-bar">
-          <i class="iconfont icon-arrowdown"></i>
-        </div>
       
     </div>
   </div>
@@ -212,283 +208,28 @@
     
       <div class="container nopadding-x-md">
         <div id="board"
-          style="margin-top: 0">
+          >
           
           <div class="container">
             <div class="row">
               <div class="col-12 col-md-10 m-auto">
                 
 
-
-  <div class="row mx-auto index-card">
+<div class="list-group">
+  <p class="h4">共计 1 篇文章</p>
+  <hr>
+  
+  
     
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/" target="_self">
-          Smartbi内置用户绕过浅析
-        </a>
-      </h2>
-
       
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/" target="_self">
-        <div>
-          ​       Smartbi是一款国内领先的商业智能可视化报表工具，它可以将数据转化为图表、图像、表格等形式，帮助企业快速发现数据背后的价值，优化决策，提高业务效率。在众多可视化报表工具中，Smartbi以高效、易用、灵活等特点著称。 ​       在对目标站点发起请求时，后台会判断我们的请求路径是否为：&quot;/vision/RMIServlet&quot;，如果路径正确才会接收对应的参
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-21 21:35" pubdate>
-              2023-07-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
+      <p class="h5">2023</p>
     
-      <span class="category-chain">
-        
-  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" class="category-chain-item">漏洞分析</a>
+    <a href="/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/" class="list-group-item list-group-item-action">
+      <time>07-21</time>
+      <div class="list-group-item-title">Smartbi内置用户绕过浅析</div>
+    </a>
   
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/07/21/Ez%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96pop%E9%93%BE%E6%9E%84%E9%80%A0%E6%80%9D%E8%B7%AF/" target="_self">
-          Ez反序列化pop链构造思路
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/21/Ez%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96pop%E9%93%BE%E6%9E%84%E9%80%A0%E6%80%9D%E8%B7%AF/" target="_self">
-        <div>
-          关于PHP反序列化的基础，大家可以自行学习。本次练习的题目比较简单，主要是利用简单题目讲解我自己对“如何寻找pop链”的理解。 废话少说，直接看代码：1234567891011121314151617181920212223242526272829303132333435363738394041424344454647&lt;?php          //flag is in flag.php
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-21 21:35" pubdate>
-              2023-07-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/" class="category-chain-item">基础漏洞</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/07/21/Python%E7%AE%80%E5%8D%95%E8%BF%9C%E8%81%94/" target="_self">
-          Python简单远联
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/21/Python%E7%AE%80%E5%8D%95%E8%BF%9C%E8%81%94/" target="_self">
-        <div>
-          Python 提供了两个级别访问的网络服务：  低级别的网络服务支持基本的 Socket，它提供了标准的 BSD Sockets API，可以访问底层操作系统Socket接口的全部方法。 高级别的网络服务模块 SocketServer， 它提供了服务器中心类，可以简化网络服务器的开发。  什么是 Socket?Socket又称”套接字”，应用程序通常通过”套接字”向网络发出请求或者应答网络请求，使
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-21 21:34" pubdate>
-              2023-07-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/Python/" class="category-chain-item">Python</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/07/21/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90/" target="_self">
-          密码学简单分析
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/21/%E5%AF%86%E7%A0%81%E5%AD%A6%E7%AE%80%E5%8D%95%E5%88%86%E6%9E%90/" target="_self">
-        <div>
-          首先简单认识一下https建立过程： 第一步：客户端向服务端发起请求 第二步：服务端响应请求，会带着数字证书（包含服务端公钥） 第三步：客户端收到后，取出公钥，并生成随机码KEY（这里的KEY就是双方后面通信的对称加密密钥），用服务端公钥对KEY进行加密，返回给服务端 第四步：服务端收到用自己的私钥解密，拿出KEY 第五步：返回给客户端用KEY加密的数据 第六步：客户端用KEY进行解密。 其中用到
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-21 21:34" pubdate>
-              2023-07-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E5%AF%86%E7%A0%81%E5%AD%A6/" class="category-chain-item">密码学</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h2 class="index-header">
-        
-        <a href="/2023/07/21/%E5%BB%B6%E6%97%B6%E6%B3%A8%E5%85%A5%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/" target="_self">
-          延时注入的几种方式
-        </a>
-      </h2>
-
-      
-      <a class="index-excerpt index-excerpt__noimg" href="/2023/07/21/%E5%BB%B6%E6%97%B6%E6%B3%A8%E5%85%A5%E7%9A%84%E5%87%A0%E7%A7%8D%E6%96%B9%E5%BC%8F/" target="_self">
-        <div>
-          时间盲注是盲注的一种，利用的场景是当目标无法使用布尔盲注获得数据可以使用这种基于时间的延时注入，通过页面回显延时来判断是否存在注入。 判断是否存在时间注入： 1http://www.xxxxxxx.com/1.php?id=1 &#x27; and if(num1,num2,num3)--+  语义：如果num1为true则返回num2,否则返回num3 若需要判断参数是否存在注入就可以： num
-        </div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2023-07-21 21:32" pubdate>
-              2023-07-21
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3 d-flex align-items-center">
-            <i class="iconfont icon-category"></i>
-            
-
-<span class="category-chains">
-  
-  
-    
-      <span class="category-chain">
-        
-  <a href="/categories/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/" class="category-chain-item">基础漏洞</a>
-  
-  
-
-      </span>
-    
-  
-</span>
-
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
+</div>
 
 
 

