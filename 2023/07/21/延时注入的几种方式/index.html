@@ -23,14 +23,14 @@
 <meta property="og:site_name" content="Myloveguoguo">
 <meta property="og:description" content="时间盲注是盲注的一种，利用的场景是当目标无法使用布尔盲注获得数据可以使用这种基于时间的延时注入，通过页面回显延时来判断是否存在注入。 判断是否存在时间注入： 1http:&#x2F;&#x2F;www.xxxxxxx.com&#x2F;1.php?id&#x3D;1 &amp;#x27; and if(num1,num2,num3)--+  语义：如果num1为true则返回num2,否则返回num3 若需要判断参数是否存在注入就可以： num">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/t1.png">
-<meta property="og:image" content="http://example.com/t2.png">
-<meta property="og:image" content="http://example.com/t3.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/07fbb50dd6cdea17b65299760551971c.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/c12ce4f5a4aeee85a865b9dccfea13ce.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/33ff06817f1d3c0263cf51a89abf6a00.png">
 <meta property="article:published_time" content="2023-07-21T13:32:38.000Z">
-<meta property="article:modified_time" content="2023-07-21T16:50:26.132Z">
+<meta property="article:modified_time" content="2023-08-15T11:30:25.929Z">
 <meta property="article:author" content="Yuanyi">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/t1.png">
+<meta name="twitter:image" content="https://ice.frostsky.com/2023/08/15/07fbb50dd6cdea17b65299760551971c.png">
   
   
   
@@ -320,14 +320,14 @@
 <p>其中<code>.gxh8pxl2n1azosrclm4398nxmosfg4.oastify.com</code>为dnslog地址</p>
 <p>注意：必须给地址后面加任意文件，哪怕不存在。目的是为了让服务器去发起请求</p>
 <h2 id="四、构造大笛卡尔积进行注入"><a href="#四、构造大笛卡尔积进行注入" class="headerlink" title="四、构造大笛卡尔积进行注入"></a>四、构造大笛卡尔积进行注入</h2><p><strong>笛卡尔算积：</strong></p>
-<p><img src="/t1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/07fbb50dd6cdea17b65299760551971c.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>也就是说数字1先去乘以ABC，然后数字2再去乘以ABC，然后数字3再去乘以ABC，其实就是Burp suite里面的Intruder模块的Attack type里面的Clutser bomb攻击方式。</p>
 <p><strong>大负荷查询</strong></p>
 <p>Mysql支持这种运算方式，我们的思路是让Mysql进行笛卡尔算积使其造成大负荷查询达到延时的效果。</p>
 <p>既然要用笛卡尔算积就要需要大额的数值来计算，在mysql数据库中都有information_schema这个表，这个表里面的数据还是蛮多的，查询一下数量</p>
-<p><img src="/t2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/c12ce4f5a4aeee85a865b9dccfea13ce.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>然后我们进行笛卡尔积运算，不难发现数值的大小影响了计算的速度，通过采用1个表2个列，或者2个列一个表，等等各种组合找出合适的延时的时间。</p>
-<p><img src="/t3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/33ff06817f1d3c0263cf51a89abf6a00.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>这里给出payload</p>
 <figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> admin <span class="hljs-keyword">where</span> id <span class="hljs-operator">=</span> <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> <span class="hljs-number">1</span> <span class="hljs-keyword">and</span> (<span class="hljs-keyword">SELECT</span> <span class="hljs-built_in">count</span>(<span class="hljs-operator">*</span>)  <span class="hljs-keyword">FROM</span> information_schema.columns A, information_schema.columns B,  information_schema.tables C);<br></code></pre></td></tr></table></figure>
 

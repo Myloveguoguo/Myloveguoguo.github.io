@@ -23,16 +23,16 @@
 <meta property="og:site_name" content="Myloveguoguo">
 <meta property="og:description" content="首先简单认识一下https建立过程： 第一步：客户端向服务端发起请求 第二步：服务端响应请求，会带着数字证书（包含服务端公钥） 第三步：客户端收到后，取出公钥，并生成随机码KEY（这里的KEY就是双方后面通信的对称加密密钥），用服务端公钥对KEY进行加密，返回给服务端 第四步：服务端收到用自己的私钥解密，拿出KEY 第五步：返回给客户端用KEY加密的数据 第六步：客户端用KEY进行解密。 其中用到">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="http://example.com/t1.png">
-<meta property="og:image" content="http://example.com/t2.png">
-<meta property="og:image" content="http://example.com/t3.png">
-<meta property="og:image" content="http://example.com/t4.png">
-<meta property="og:image" content="http://example.com/t5.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/32d54609d554518d7bf3cb33e93c38ba.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/a832bce40945c4810a575442114e45f9.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/a6837b71754583088273f5ca9cf62dd9.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/85601c7734ef08860e0b2a090505c5b7.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/53247bac8ebef1ea9f773339ce07394d.png">
 <meta property="article:published_time" content="2023-07-21T13:34:05.000Z">
-<meta property="article:modified_time" content="2023-07-21T16:51:04.743Z">
+<meta property="article:modified_time" content="2023-08-15T11:31:48.797Z">
 <meta property="article:author" content="Yuanyi">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="http://example.com/t1.png">
+<meta name="twitter:image" content="https://ice.frostsky.com/2023/08/15/32d54609d554518d7bf3cb33e93c38ba.png">
   
   
   
@@ -338,7 +338,7 @@
 <p><strong>序列密码原理：</strong></p>
 <p>以明文的比特为加密单位，用某一个伪随机序列作为加密密钥，与明文进行异或运算，获得密文序列；</p>
 <p>在接收端，用相同的随机序列与密文进行异或运算便可恢复明文序列。</p>
-<p><img src="/t1.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/32d54609d554518d7bf3cb33e93c38ba.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>序列密码算法的安全强度完全取决于伪随机序列的好坏，因此关键问题是：伪随机序列发生器的设计。</p>
 <p><strong>优点：</strong></p>
 <p>1.错误扩散小（一个码元出错不影响其它码元）；</p>
@@ -350,23 +350,23 @@
 <p>分组密码（ Block Cipher）加密是在密钥的控制之下，将定长的明文块转换成等长密文的技术。当前的许多分组密码采用64位分组大小，但为了提高安全性，这一长度可能会增加。</p>
 <p>原理：</p>
 <p>将明文序列以固定长度（ Fixed length）进行分组，每一组明文用相同的密钥和加密函数进行运算。</p>
-<p><img src="/t2.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/a832bce40945c4810a575442114e45f9.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>优缺点：</p>
 <p>容易检测出对信息的篡改，且不需要密钥同步，具有很强的适应性；</p>
 <p>（与序列密码相比）分组密码在设计上的自由度小。</p>
 <p>最典型分组密码是DES数据加密标准，它是单钥密码体制的最成功的例子。</p>
 <p><strong>DES（对称）：</strong></p>
 <p>加密过程：</p>
-<p><img src="/t3.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/a6837b71754583088273f5ca9cf62dd9.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>初始置换对输入的比特位置进行调整。</p>
 <p>通过初始置换表实现</p>
 <p>初始置换的功能</p>
 <p>举例来看，输入为8位01110010</p>
 <p>初始置换表为：</p>
-<p><img src="/t4.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/85601c7734ef08860e0b2a090505c5b7.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>则输出为：10001101</p>
 <p>初始置换是固定公开的，因此没有密码的意义。</p>
-<p><img src="/t5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/53247bac8ebef1ea9f773339ce07394d.png" srcset="/img/loading.gif" lazyload alt="img"></p>
 <p>DES系统的保密性主要取决于什么?</p>
 <p>密钥的安全性 。</p>
 <p>如何将密钥安全、可靠地分配给通信双方，在网络通信条件下就更为复杂，包括密钥产生、分配、存储、销毁等多方面的问题，统称为<strong>密钥管理</strong>。</p>
