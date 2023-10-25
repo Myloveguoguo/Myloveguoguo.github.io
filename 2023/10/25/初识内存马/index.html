@@ -23,19 +23,19 @@
 <meta property="og:site_name" content="Myloveguoguo">
 <meta property="og:description" content="学习内存马之前你必须知道的知识JavaWeb三大件当JavaWeb接收到请求时会依次经过 Listener  —&gt; Filter —&gt; Servlet Listener简介Java Web 开发中的监听器（Listener）就是 Application、Session 和 Request 三大对象创建、销毁或者往其中添加、修改、删除属性时自动执行代码的功能组件。 ServletCont">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/jpeg/34904743/1678349005798-611edc24-4ded-4dc7-af85-9eb801c030a3.jpeg?x-oss-process=image/resize,w_690,limit_0/interlace,1">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/jpeg/34904743/1678349033570-d8724a6c-5e96-45ee-be87-d8364cc58497.jpeg">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351383748-a55c42a1-8842-4538-a1ab-524a61ae2537.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351406071-9a34fffd-ee6c-4312-a1ca-be9274b6b4bc.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351443309-7add08ba-df0c-4a79-9e0f-6c17f1896707.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351454910-bb35e834-c059-4b55-b6ec-cd3afbd3b2cb.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351470041-5f847f5f-cfb3-4b95-927b-629a3a7c01de.png">
-<meta property="og:image" content="https://cdn.nlark.com/yuque/0/2023/jpeg/34904743/1678349372842-f1d9876f-cf34-443c-8a39-3fc3f7dac0e3.jpeg">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/6d4449465499c6afd9ae26f7a9c1f185.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/f4d63124cec3f9b9fd6fba648346cf25.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/7f4b4458ea66cb54b7f40e58e423a156.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/073ffe27f239822d2a31649cff8f34b9.md.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/1b94dc68288b74a6a659a1765322d4cc.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/f05b2d4628e80b4b99e78a0f62e1ce93.md.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/f4f434b53380eded1250d6419e101dab.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/42531669844863c0a1404fdf0bcb2dd0.md.png">
 <meta property="article:published_time" content="2023-10-25T11:39:38.000Z">
-<meta property="article:modified_time" content="2023-10-25T11:40:24.398Z">
+<meta property="article:modified_time" content="2023-10-25T11:56:57.562Z">
 <meta property="article:author" content="Yuanyi">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:image" content="https://cdn.nlark.com/yuque/0/2023/jpeg/34904743/1678349005798-611edc24-4ded-4dc7-af85-9eb801c030a3.jpeg?x-oss-process=image/resize,w_690,limit_0/interlace,1">
+<meta name="twitter:image" content="https://i.mji.rip/2023/10/25/6d4449465499c6afd9ae26f7a9c1f185.png">
   
   
   
@@ -299,7 +299,7 @@
 <p><code>Filter</code>的配置类似于<code>Servlet</code>，由<code>&lt;filter&gt;</code>和<code>&lt;filter-mapping&gt;</code>两组标签组成，如果Servlet版本大于3.0同样可以使用注解的方式配置Filter。</p>
 <h4 id="Filter-的生命周期"><a href="#Filter-的生命周期" class="headerlink" title="Filter 的生命周期"></a>Filter 的生命周期</h4><p>与 servlet 一样，Filter 的创建和销毁也由 Web 容器负责。Web 应用程序启动时，Web 服务器将创建 Filter 的实例对象，并调用其 init() 方法，读取 web.xml 配置，完成对象的初始化功能，从而为后续的用户请求作好拦截的准备工作（filter 对象只会创建一次，init 方法也只会执行一次）。开发人员通过init方法的参数，可获得代表当前filter配置信息的FilterConfig对象。Filter 对象创建后会驻留在内存，当 Web 应用移除或服务器停止时才销毁。在 Web 容器卸载 Filter 对象之前被调用。该方法在 Filter 的生命周期中仅执行一次。在这个方法中，可以释放过滤器使用的资源。</p>
 <h4 id="Filter链"><a href="#Filter链" class="headerlink" title="Filter链"></a>Filter链</h4><p>当多个 Filter 同时存在的时候，组成了 Filter 链。Web 服务器根据 Filter 在 web.xml 文件中的注册顺序，决定先调用哪个 Filter。当第一个 Filter 的 doFilter 方法被调用时，web服务器会创建一个代表 Filter 链的 FilterChain 对象传递给该方法，通过判断 FilterChain 中是否还有 Filter 决定后面是否还调用 Filter。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2023/jpeg/34904743/1678349005798-611edc24-4ded-4dc7-af85-9eb801c030a3.jpeg?x-oss-process=image/resize,w_690,limit_0/interlace,1" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://i.mji.rip/2023/10/25/6d4449465499c6afd9ae26f7a9c1f185.png" srcset="/img/loading.gif" lazyload alt="image-20231025195002798"></p>
 <h3 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h3><h4 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h4><p><code>Servlet</code>是在 <code>Java Web</code>容器中运行的<code>小程序</code>,通常我们用<code>Servlet</code>来处理一些较为复杂的服务器端的业务逻辑。<code>Servlet</code>是<code>Java EE</code>的核心,也是所有的MVC框架的实现的根本。</p>
 <h4 id="请求的处理过程"><a href="#请求的处理过程" class="headerlink" title="请求的处理过程"></a>请求的处理过程</h4><p>客户端发起一个 http 请求，比如 get 类型。</p>
 <p>Servlet 容器接收到请求，根据请求信息，封装成 HttpServletRequest 和HttpServletResponse 对象。这步也就是我们的传参。</p>
@@ -338,12 +338,13 @@
 </ul>
 <h3 id="Tomcat-与-Servlet-的关系"><a href="#Tomcat-与-Servlet-的关系" class="headerlink" title="Tomcat 与 Servlet 的关系"></a>Tomcat 与 Servlet 的关系</h3><p>我们根据上面的基础知识可以知道Tomcat 是Web应用服务器，是一个Servlet&#x2F;JSP容器，而Servlet容器从上到下分别是 Engine、Host、Context、Wrapper。</p>
 <p>在Tomcat中Wrapper代表一个独立的servlet实例，StandardWrapper是Wrapper接口的标准实现类（StandardWrapper 的主要任务就是载入Servlet类并且进行实例化），同时其从ContainerBase类继承过来，表示他是一个容器，只是他是最底层的容器，不能再含有任何的子容器了，且其父容器只能是context。而我们在也就是需要在这里去载入我们自定义的Servlet加载我们的内存马。</p>
-<h2 id="Tomcat-架构"><a href="#Tomcat-架构" class="headerlink" title="Tomcat 架构"></a>Tomcat 架构</h2><h3 id="Tomcat-架构原理"><a href="#Tomcat-架构原理" class="headerlink" title="Tomcat 架构原理"></a>Tomcat 架构原理</h3><p>tomcat的框架如下图所示，主要有server、service、connector、container 四个部分 <img src="https://cdn.nlark.com/yuque/0/2023/jpeg/34904743/1678349033570-d8724a6c-5e96-45ee-be87-d8364cc58497.jpeg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<h2 id="Tomcat-架构"><a href="#Tomcat-架构" class="headerlink" title="Tomcat 架构"></a>Tomcat 架构</h2><h3 id="Tomcat-架构原理"><a href="#Tomcat-架构原理" class="headerlink" title="Tomcat 架构原理"></a>Tomcat 架构原理</h3><p>tomcat的框架如下图所示，主要有server、service、connector、container 四个部分 </p>
+<p><img src="https://i.mji.rip/2023/10/25/f4d63124cec3f9b9fd6fba648346cf25.png" srcset="/img/loading.gif" lazyload alt="image-20231025195032719"></p>
 <p>图中可以看出 Tomcat 的心脏是两个组件：Connector 和 Container：<br>Connector 主要负责对外交流，进行 Socket 通信(基于 TCP&#x2F;IP)，解析 HTTP 报文，对应下图中的http服务器；</p>
 <p>Container 主要处理 Connector 接受的请求，主要是处理内部事务，加载和管理 Servlet，由 Servlet 具体负责处理 Request 请求，对应下图中的servlet容器。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351383748-a55c42a1-8842-4538-a1ab-524a61ae2537.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://i.mji.rip/2023/10/25/7f4b4458ea66cb54b7f40e58e423a156.png" srcset="/img/loading.gif" lazyload alt="image-20231025195050119"></p>
 <p>以上两个功能，分别对应着tomcat的两个核心组件连接器（Connector）和容器（Container），连接器负责对外交流（完成 Http 服务器功能），容器负责内部处理（完成 Servlet 容器功能）。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351406071-9a34fffd-ee6c-4312-a1ca-be9274b6b4bc.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://i.mji.rip/2023/10/25/073ffe27f239822d2a31649cff8f34b9.md.png" srcset="/img/loading.gif" lazyload alt="image-20231025195111671"></p>
 <h3 id="server"><a href="#server" class="headerlink" title="server"></a>server</h3><p>即服务器，代表整个 Tomcat 服务器，它要能够提供一个接口让其它程序能够访问到这个 Service 集合、同时要维护它所包含的所有 Service 的生命周期，包括如何初始化、如何结束服务、如何找到别人要访问的 Service。还有其它的一些次要的任务，如您住在这个地方要向当地政府去登记啊、可能还有要配合当地公安机关日常的安全检查什么的。</p>
 <p>一个 Tomcat 只有一个 Server Server 中包含至少一个 Service 组件，用于提供具体服务。</p>
 <h3 id="service"><a href="#service" class="headerlink" title="service"></a>service</h3><p>Service 主要是为了关联 Connector 和 Container，同时会初始化它下面的其它组件，在 Connector 和 Container 外面多包一层，把它们组装在一起，向外面提供服务，一个 Service 可以设置多个 Connector，但是只能有一个 Container 容器。</p>
@@ -361,10 +362,9 @@
 <h4 id="Adapter-组件"><a href="#Adapter-组件" class="headerlink" title="Adapter 组件"></a>Adapter 组件</h4><p>由于协议的不同，Tomcat 定义了自己的 Request 类来存放请求信息，但是这个不是标准的 ServletRequest。于是需要使用 Adapter 将 Tomcat Request 对象转成 ServletRequest 对象，然后就能调用容器的 service 方法。</p>
 <p>简而言之，Endpoint 接收到 Socket 连接后，生成一个 SocketProcessor 任务提交到线程池进行处理，SocketProcessor 的 run 方法将调用 Processor 组件进行应用层协议的解析，Processor 解析后生成 Tomcat Request 对象，然后会调用 Adapter 的 Service 方法，方法内部通过如下代码将 Request 请求传递到容器中。</p>
 <p>connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);</p>
-<p>一个总的 Tomcat Connector 功能如图所示</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351443309-7add08ba-df0c-4a79-9e0f-6c17f1896707.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>一个总的 Tomcat Connector 功能如图所示<img src="https://i.mji.rip/2023/10/25/1b94dc68288b74a6a659a1765322d4cc.png" srcset="/img/loading.gif" lazyload alt="image-20231025195129773"></p>
 <h3 id="Container"><a href="#Container" class="headerlink" title="Container"></a>Container</h3><p>Container（又名Catalina）用于处理Connector发过来的servlet连接请求，它是容器的父接口，所有子容器都必须实现这个接口，Container 容器的设计用的是典型的责任链的设计模式，它有四个子容器组件构成，分别是：Engine、Host、Context、Wrapper，这四个组件不是平行的，而是父子关系，Engine 包含 Host，Host 包含 Context，Context 包含 Wrapper。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351454910-bb35e834-c059-4b55-b6ec-cd3afbd3b2cb.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://i.mji.rip/2023/10/25/f05b2d4628e80b4b99e78a0f62e1ce93.md.png" srcset="/img/loading.gif" lazyload alt="image-20231025195153658"></p>
 <p>Tomcat 设计了 4 种容器: Engine、Host、Context、Wrapper，这四种容器是父子关系</p>
 <ul>
 <li>Engine: 最顶层容器组件，可以包含多个 Host。实现类为 org.apache.catalina.core.StandardEngine</li>
@@ -374,10 +374,10 @@
 </ul>
 <p>通常一个 Servlet class 对应一个 Wrapper，如果有多个 Servlet 就可以定义多个 Wrapper，如果有多个 Wrapper 就要定义一个更高的 Container。</p>
 <p>举个栗子，a.com和b.com分别对应着两个Host</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2023/png/34904743/1678351470041-5f847f5f-cfb3-4b95-927b-629a3a7c01de.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://i.mji.rip/2023/10/25/f4f434b53380eded1250d6419e101dab.png" srcset="/img/loading.gif" lazyload alt="image-20231025195214472"></p>
 <p>每一个 Context 都有唯一的 path。这里的 path 不是指 servlet 绑定的 WebServlet 地址，而是指独立的一个 Web 应用地址。就好比 Tomat 默认的 &#x2F; 地址和 &#x2F;manager 地址就是两个不同的 web 应用，所以对应两个不同的 Context。要添加 Context 需要在 server.xml 中配置 docbase。</p>
 <p>如下图所示， 在一个 web 应用中创建了 2 个 servlet 服务，WebServlet 地址分别是 &#x2F;Demo1 和 &#x2F;Demo2 。因为它们属于同一个 Web 应用所以 Context 一样，但访问地址不一样所以 Wrapper 不一样。&#x2F;manager 访问的 Web 应用是 Tomcat 默认的管理页面，是另外一个独立的 web 应用， 所以 Context 与前两个不一样。</p>
-<p><img src="https://cdn.nlark.com/yuque/0/2023/jpeg/34904743/1678349372842-f1d9876f-cf34-443c-8a39-3fc3f7dac0e3.jpeg" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p><img src="https://i.mji.rip/2023/10/25/42531669844863c0a1404fdf0bcb2dd0.md.png" srcset="/img/loading.gif" lazyload alt="image-20231025195234445"></p>
 <h2 id="Tomcat-的类加载机制"><a href="#Tomcat-的类加载机制" class="headerlink" title="Tomcat 的类加载机制"></a>Tomcat 的类加载机制</h2><p>由于 Tomcat 中有多个 WebApp 同时要确保之间相互隔离，所以 Tomcat 的类加载机制也不是传统的双亲委派机制。</p>
 <p>Tomcat 自定义的类加载器 WebAppClassloader 为了确保隔离多个 WebApp 之间相互隔离，所以打破了双亲委托机制。每个 WebApp 用一个独有的 ClassLoader 实例来优先处理加载。它首先尝试自己加载某个类，如果找不到再交给父类加载器，其目的是优先加载 WEB 应用自己定义的类。</p>
 <p>同时为了防止 WEB 应用自己的类覆盖 JRE 的核心类，在本地 WEB 应用目录下查找之前，先使用 ExtClassLoader（使用双亲委托机制）去加载，这样既打破了双亲委托，同时也能安全加载类。</p>
