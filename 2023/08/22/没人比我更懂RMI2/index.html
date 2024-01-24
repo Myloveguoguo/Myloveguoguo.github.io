@@ -1,0 +1,833 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yuanyi">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="在上一篇文章当中我们简单的讲解了RMI的基础概念，在这一篇文章中，我们将深入剖析RMI各部分的通信过程，最后一篇再来讲漏洞利用。 有朋友说上一篇只放截图没有圈重点，这样对刚开始学的学弟学妹不太友好，那我这一篇我尽量补上。 通过之前的讲解我们知道RMI一共分为三部分分别是：客户端、服务端、注册中心。他们之间可以两两相互通信。简单画个图就是这样：  获取注册中心的方式共有两种： 一种是：Registr">
+<meta property="og:type" content="article">
+<meta property="og:title" content="没人比我更懂RMI(中)">
+<meta property="og:url" content="http://example.com/2023/08/22/%E6%B2%A1%E4%BA%BA%E6%AF%94%E6%88%91%E6%9B%B4%E6%87%82RMI2/index.html">
+<meta property="og:site_name" content="Myloveguoguo">
+<meta property="og:description" content="在上一篇文章当中我们简单的讲解了RMI的基础概念，在这一篇文章中，我们将深入剖析RMI各部分的通信过程，最后一篇再来讲漏洞利用。 有朋友说上一篇只放截图没有圈重点，这样对刚开始学的学弟学妹不太友好，那我这一篇我尽量补上。 通过之前的讲解我们知道RMI一共分为三部分分别是：客户端、服务端、注册中心。他们之间可以两两相互通信。简单画个图就是这样：  获取注册中心的方式共有两种： 一种是：Registr">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/23039956dc27c72043edd4276ba1853d.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/4b2d9342d88710f6d22136e3096d1408.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/cf4b52a033f2c39553a24d30c7e89f7d.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/acfe9a0a16740e3c29e158d17db5bde5.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/74e8ce5c4cfa5131f6e02b18b59b853c.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/a2e20a9d46e7d0f517503841b067113e.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/a1d3ca5eff9e5e7ec2661fdf83e1ce7b.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/40df2c94f5fca5d56fe89e40ce9661da.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/e59771e38ad7f3c84349c59f0efb70d4.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/24f33ca283f4a04f8dc199b3a8f09598.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/e47f9c3228385f27fce79ae0074d3314.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/662717d17f9886a6502a89856e819ba6.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/275901a46a4cb7c12f85137e55ea6793.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/1940958287a24a2e3ac4012d570b37a2.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/8fa89c502acee602776f65be69d4a756.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/bf38c474f3b452c4d280ea8cdfac025e.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/088ff2e013a57161c9a63e29cc760854.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/b1258f00c2992f113eb0e2f28612aa81.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/d998899f7c3e8656c6c9708ca3dae8bf.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/cee9cd6c9403b31713239bd8e92121b5.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/8fa89c502acee602776f65be69d4a756.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/275fe0c0aa0e7778e5e4615266113f1f.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/212d78cbaef92f428dc4a68b4c883816.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/965c1bdafb6720c33e1abb54dfe78fb0.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/2760ce3fafec7c5457691bafc4eadb52.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/9db8a8e76868723515c6c4f2529cd254.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/a873c1079afe69942f694b99facb08bd.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/dce65865b6bd708792bb4e505c6b9b07.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/cbaeec9ab778702b00e8db09ce989024.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/ca31e6155ff4c5f8df5fe0bd450079cf.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/0b766de6573b2a12a7c7c4787b5fed90.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/695620729bcad38c89ea2bc0fbef8067.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/fed9f7da4227336da7da5a83d6cdddd0.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/22/b54078598bee97a13408fbc92bca4055.png">
+<meta property="article:published_time" content="2023-08-22T11:58:52.000Z">
+<meta property="article:modified_time" content="2023-08-24T12:50:55.813Z">
+<meta property="article:author" content="Yuanyi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ice.frostsky.com/2023/08/22/23039956dc27c72043edd4276ba1853d.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>没人比我更懂RMI(中) - Myloveguoguo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/shubiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Myloveguoguo</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="没人比我更懂RMI(中)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-22 19:58" pubdate>
+          2023年8月22日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          11k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          89 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">没人比我更懂RMI(中)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <p>在上一篇文章当中我们简单的讲解了RMI的基础概念，在这一篇文章中，我们将深入剖析RMI各部分的通信过程，最后一篇再来讲漏洞利用。</p>
+<p>有朋友说上一篇只放截图没有圈重点，这样对刚开始学的学弟学妹不太友好，那我这一篇我尽量补上。</p>
+<p>通过之前的讲解我们知道RMI一共分为三部分分别是：客户端、服务端、注册中心。他们之间可以两两相互通信。简单画个图就是这样：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/23039956dc27c72043edd4276ba1853d.png" srcset="/img/loading.gif" lazyload alt="image-20230822145352149"></p>
+<p>获取注册中心的方式共有两种：</p>
+<p>一种是：<code>Registry r = LocateRegistry.createRegistry(1088);</code>在创建时获取。</p>
+<p>另一种是：<code>Registry registry = LocateRegistry.getRegistry(&quot;127.0.0.1&quot;,1088);</code>远程获取。</p>
+<h3 id="本地获取注册中心"><a href="#本地获取注册中心" class="headerlink" title="本地获取注册中心"></a>本地获取注册中心</h3><p>我们先来看第一种，本地获取注册中心。</p>
+<p><code>createRegistry()</code>如下有两种方法：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/4b2d9342d88710f6d22136e3096d1408.png" srcset="/img/loading.gif" lazyload alt="image-20230822150942148"></p>
+<p>第一种只需要传入<code>port</code>（这里的port代表的就是注册中心监听的端口）</p>
+<p>第二种方式除了传入端口之外，还需要传入两个Socket对象。</p>
+<p>其实这两种方法最终获取到的都是RegistryImpl对象，所以对于我们来说用哪种意义不大，我们只需要分析第一种即可。</p>
+<p>通过上图我们可以看到如果只传入port的话，他会new一个RegistryImpl()对象，我们可以跟进看一下具体的实现步骤。</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/cf4b52a033f2c39553a24d30c7e89f7d.png" srcset="/img/loading.gif" lazyload alt="image-20230822152426268"></p>
+<p>可以看到内部时做了判断，首先要求端口等于1099且设置了安全管理器会进入if。否则会执行else中的代码，可以看到，不管是if还是else他们中都有我们上一篇文章中提到的<code>LiveRef</code>，我们知道<code>LiveRef</code>是经过封装的处理网络请求的类。</p>
+<p>再往后就是创建stub和Skeleton了，我们省去这步，之后就到了<code>TCPTransport.Object</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/acfe9a0a16740e3c29e158d17db5bde5.png" srcset="/img/loading.gif" lazyload alt="image-20230822154504105"></p>
+<p>跟进listen()方法：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/74e8ce5c4cfa5131f6e02b18b59b853c.png" srcset="/img/loading.gif" lazyload alt="image-20230822155148288"></p>
+<p>在newServerSocket时会开启端口监听，接着会设置AcceptLoop线程，此时会触发run方法。</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/a2e20a9d46e7d0f517503841b067113e.png" srcset="/img/loading.gif" lazyload alt="image-20230822155032317"></p>
+<p>在跟进<code>executeAcceptLoop()</code>:</p>
+<p>他会获取到请求的相关信息，比如Host之类的；之后在下边会创建一个线程调用<code>ConnectionHandler</code>来处理请求：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/a1d3ca5eff9e5e7ec2661fdf83e1ce7b.png" srcset="/img/loading.gif" lazyload alt="image-20230822155513463"></p>
+<p>跟进<code>ConnectionHandler</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/40df2c94f5fca5d56fe89e40ce9661da.png" srcset="/img/loading.gif" lazyload alt="image-20230822160103475"></p>
+<p>这里的var2就是上面传入的ServerSocket对象，再跟进<code>run0()</code>：</p>
+<p>这个<code>run0</code>代码有点多我就不截图了，直接贴上，方便大家阅读</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">run0</span><span class="hljs-params">()</span> &#123;<br>           <span class="hljs-type">TCPEndpoint</span> <span class="hljs-variable">var1</span> <span class="hljs-operator">=</span> TCPTransport.<span class="hljs-built_in">this</span>.getEndpoint();<br>           <span class="hljs-type">int</span> <span class="hljs-variable">var2</span> <span class="hljs-operator">=</span> var1.getPort();<br>           TCPTransport.threadConnectionHandler.set(<span class="hljs-built_in">this</span>);<br><br>           <span class="hljs-keyword">try</span> &#123;<br>               <span class="hljs-built_in">this</span>.socket.setTcpNoDelay(<span class="hljs-literal">true</span>);<br>           &#125; <span class="hljs-keyword">catch</span> (Exception var31) &#123;<br>           &#125;<br><br>           <span class="hljs-keyword">try</span> &#123;<br>               <span class="hljs-keyword">if</span> (TCPTransport.connectionReadTimeout &gt; <span class="hljs-number">0</span>) &#123;<br>                   <span class="hljs-built_in">this</span>.socket.setSoTimeout(TCPTransport.connectionReadTimeout);<br>               &#125;<br>           &#125; <span class="hljs-keyword">catch</span> (Exception var30) &#123;<br>           &#125;<br><br>           <span class="hljs-keyword">try</span> &#123;<br>               <span class="hljs-type">InputStream</span> <span class="hljs-variable">var3</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.socket.getInputStream();<br>               <span class="hljs-type">Object</span> <span class="hljs-variable">var4</span> <span class="hljs-operator">=</span> var3.markSupported() ? var3 : <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedInputStream</span>(var3);<br>               ((InputStream)var4).mark(<span class="hljs-number">4</span>);<br>               <span class="hljs-type">DataInputStream</span> <span class="hljs-variable">var5</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DataInputStream</span>((InputStream)var4);<br>               <span class="hljs-type">int</span> <span class="hljs-variable">var6</span> <span class="hljs-operator">=</span> var5.readInt();<br>               <span class="hljs-keyword">if</span> (var6 == <span class="hljs-number">1347375956</span>) &#123;<br>                   <span class="hljs-keyword">if</span> (TCPTransport.disableIncomingHttp) &#123;<br>                       <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RemoteException</span>(<span class="hljs-string">&quot;RMI over HTTP is disabled&quot;</span>);<br>                   &#125;<br><br>                   TCPTransport.tcpLog.log(Log.BRIEF, <span class="hljs-string">&quot;decoding HTTP-wrapped call&quot;</span>);<br>                   ((InputStream)var4).reset();<br><br>                   <span class="hljs-keyword">try</span> &#123;<br>                       <span class="hljs-built_in">this</span>.socket = <span class="hljs-keyword">new</span> <span class="hljs-title class_">HttpReceiveSocket</span>(<span class="hljs-built_in">this</span>.socket, (InputStream)var4, (OutputStream)<span class="hljs-literal">null</span>);<br>                       <span class="hljs-built_in">this</span>.remoteHost = <span class="hljs-string">&quot;0.0.0.0&quot;</span>;<br>                       var3 = <span class="hljs-built_in">this</span>.socket.getInputStream();<br>                       var4 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedInputStream</span>(var3);<br>                       var5 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">DataInputStream</span>((InputStream)var4);<br>                       var6 = var5.readInt();<br>                   &#125; <span class="hljs-keyword">catch</span> (IOException var29) &#123;<br>                       <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RemoteException</span>(<span class="hljs-string">&quot;Error HTTP-unwrapping call&quot;</span>, var29);<br>                   &#125;<br>               &#125;<br><br>               <span class="hljs-type">short</span> <span class="hljs-variable">var7</span> <span class="hljs-operator">=</span> var5.readShort();<br>               <span class="hljs-keyword">if</span> (var6 == <span class="hljs-number">1246907721</span> &amp;&amp; var7 == <span class="hljs-number">2</span>) &#123;<br>                   <span class="hljs-type">OutputStream</span> <span class="hljs-variable">var8</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.socket.getOutputStream();<br>                   <span class="hljs-type">BufferedOutputStream</span> <span class="hljs-variable">var9</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">BufferedOutputStream</span>(var8);<br>                   <span class="hljs-type">DataOutputStream</span> <span class="hljs-variable">var10</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">DataOutputStream</span>(var9);<br>                   <span class="hljs-type">int</span> <span class="hljs-variable">var11</span> <span class="hljs-operator">=</span> <span class="hljs-built_in">this</span>.socket.getPort();<br>                   <span class="hljs-keyword">if</span> (TCPTransport.tcpLog.isLoggable(Log.BRIEF)) &#123;<br>                       TCPTransport.tcpLog.log(Log.BRIEF, <span class="hljs-string">&quot;accepted socket from [&quot;</span> + <span class="hljs-built_in">this</span>.remoteHost + <span class="hljs-string">&quot;:&quot;</span> + var11 + <span class="hljs-string">&quot;]&quot;</span>);<br>                   &#125;<br><br>                   <span class="hljs-type">byte</span> <span class="hljs-variable">var15</span> <span class="hljs-operator">=</span> var5.readByte();<br>                   TCPEndpoint var12;<br>                   TCPChannel var13;<br>                   TCPConnection var14;<br>                   <span class="hljs-keyword">switch</span> (var15) &#123;<br>                       <span class="hljs-keyword">case</span> <span class="hljs-number">75</span>:<br>                           var10.writeByte(<span class="hljs-number">78</span>);<br>                           <span class="hljs-keyword">if</span> (TCPTransport.tcpLog.isLoggable(Log.VERBOSE)) &#123;<br>                               TCPTransport.tcpLog.log(Log.VERBOSE, <span class="hljs-string">&quot;(port &quot;</span> + var2 + <span class="hljs-string">&quot;) suggesting &quot;</span> + <span class="hljs-built_in">this</span>.remoteHost + <span class="hljs-string">&quot;:&quot;</span> + var11);<br>                           &#125;<br><br>                           var10.writeUTF(<span class="hljs-built_in">this</span>.remoteHost);<br>                           var10.writeInt(var11);<br>                           var10.flush();<br>                           <span class="hljs-type">String</span> <span class="hljs-variable">var16</span> <span class="hljs-operator">=</span> var5.readUTF();<br>                           <span class="hljs-type">int</span> <span class="hljs-variable">var17</span> <span class="hljs-operator">=</span> var5.readInt();<br>                           <span class="hljs-keyword">if</span> (TCPTransport.tcpLog.isLoggable(Log.VERBOSE)) &#123;<br>                               TCPTransport.tcpLog.log(Log.VERBOSE, <span class="hljs-string">&quot;(port &quot;</span> + var2 + <span class="hljs-string">&quot;) client using &quot;</span> + var16 + <span class="hljs-string">&quot;:&quot;</span> + var17);<br>                           &#125;<br><br>                           var12 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TCPEndpoint</span>(<span class="hljs-built_in">this</span>.remoteHost, <span class="hljs-built_in">this</span>.socket.getLocalPort(), var1.getClientSocketFactory(), var1.getServerSocketFactory());<br>                           var13 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TCPChannel</span>(TCPTransport.<span class="hljs-built_in">this</span>, var12);<br>                           var14 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TCPConnection</span>(var13, <span class="hljs-built_in">this</span>.socket, (InputStream)var4, var9);<br>                           TCPTransport.<span class="hljs-built_in">this</span>.handleMessages(var14, <span class="hljs-literal">true</span>);<br>                           <span class="hljs-keyword">return</span>;<br>                       <span class="hljs-keyword">case</span> <span class="hljs-number">76</span>:<br>                           var12 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TCPEndpoint</span>(<span class="hljs-built_in">this</span>.remoteHost, <span class="hljs-built_in">this</span>.socket.getLocalPort(), var1.getClientSocketFactory(), var1.getServerSocketFactory());<br>                           var13 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TCPChannel</span>(TCPTransport.<span class="hljs-built_in">this</span>, var12);<br>                           var14 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TCPConnection</span>(var13, <span class="hljs-built_in">this</span>.socket, (InputStream)var4, var9);<br>                           TCPTransport.<span class="hljs-built_in">this</span>.handleMessages(var14, <span class="hljs-literal">false</span>);<br>                           <span class="hljs-keyword">return</span>;<br>                       <span class="hljs-keyword">case</span> <span class="hljs-number">77</span>:<br>                           <span class="hljs-keyword">if</span> (TCPTransport.tcpLog.isLoggable(Log.VERBOSE)) &#123;<br>                               TCPTransport.tcpLog.log(Log.VERBOSE, <span class="hljs-string">&quot;(port &quot;</span> + var2 + <span class="hljs-string">&quot;) accepting multiplex protocol&quot;</span>);<br>                           &#125;<br><br>                           var10.writeByte(<span class="hljs-number">78</span>);<br>                           <span class="hljs-keyword">if</span> (TCPTransport.tcpLog.isLoggable(Log.VERBOSE)) &#123;<br>                               TCPTransport.tcpLog.log(Log.VERBOSE, <span class="hljs-string">&quot;(port &quot;</span> + var2 + <span class="hljs-string">&quot;) suggesting &quot;</span> + <span class="hljs-built_in">this</span>.remoteHost + <span class="hljs-string">&quot;:&quot;</span> + var11);<br>                           &#125;<br><br>                           var10.writeUTF(<span class="hljs-built_in">this</span>.remoteHost);<br>                           var10.writeInt(var11);<br>                           var10.flush();<br>                           var12 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">TCPEndpoint</span>(var5.readUTF(), var5.readInt(), var1.getClientSocketFactory(), var1.getServerSocketFactory());<br>                           <span class="hljs-keyword">if</span> (TCPTransport.tcpLog.isLoggable(Log.VERBOSE)) &#123;<br>                               TCPTransport.tcpLog.log(Log.VERBOSE, <span class="hljs-string">&quot;(port &quot;</span> + var2 + <span class="hljs-string">&quot;) client using &quot;</span> + var12.getHost() + <span class="hljs-string">&quot;:&quot;</span> + var12.getPort());<br>                           &#125;<br><br>                           ConnectionMultiplexer var18;<br>                           <span class="hljs-keyword">synchronized</span>(TCPTransport.<span class="hljs-built_in">this</span>.channelTable) &#123;<br>                               var13 = TCPTransport.<span class="hljs-built_in">this</span>.getChannel(var12);<br>                               var18 = <span class="hljs-keyword">new</span> <span class="hljs-title class_">ConnectionMultiplexer</span>(var13, (InputStream)var4, var8, <span class="hljs-literal">false</span>);<br>                               var13.useMultiplexer(var18);<br>                           &#125;<br><br>                           var18.run();<br>                           <span class="hljs-keyword">return</span>;<br>                       <span class="hljs-keyword">default</span>:<br>                           var10.writeByte(<span class="hljs-number">79</span>);<br>                           var10.flush();<br>                           <span class="hljs-keyword">return</span>;<br>                   &#125;<br>               &#125;<br><br>               TCPTransport.closeSocket(<span class="hljs-built_in">this</span>.socket);<br>           &#125; <span class="hljs-keyword">catch</span> (IOException var32) &#123;<br>               TCPTransport.tcpLog.log(Log.BRIEF, <span class="hljs-string">&quot;terminated with exception:&quot;</span>, var32);<br>               <span class="hljs-keyword">return</span>;<br>           &#125; <span class="hljs-keyword">finally</span> &#123;<br>               TCPTransport.closeSocket(<span class="hljs-built_in">this</span>.socket);<br>           &#125;<br><br>       &#125;<br></code></pre></td></tr></table></figure>
+
+<p>总结一下就是，先是TCP传输连接处理方法，然后根据不同的调用类型进行相应处理，我们重点关注<code>handleMessages</code>来处理请求：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/e59771e38ad7f3c84349c59f0efb70d4.png" srcset="/img/loading.gif" lazyload alt="image-20230822161209922"></p>
+<p>上面还是获取客户端传来的数据，我们主要看下面的部分：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/24f33ca283f4a04f8dc199b3a8f09598.png" srcset="/img/loading.gif" lazyload alt="image-20230822161256820"></p>
+<p>这里只需要关注80，因为客户端发送数据的时候这里发的是80，具体后边会说。</p>
+<p>在80部分，先创建了<code>StreamRemoteCall()</code>对象，并传入var1，var1是当前连接的Connection对象。再跟进<code>serviceCall()</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/e47f9c3228385f27fce79ae0074d3314.png" srcset="/img/loading.gif" lazyload alt="image-20230822161710312"></p>
+<p>上面还是先获取信息(ObjID、Target对象…..)，再下面会调用<code>dispath()</code>来处理请求，他本身几首两个参数，一个是<code>Remote</code>对象，一个是当前连接的<code>StreamRemoteCall</code>对象，接着跟进：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/662717d17f9886a6502a89856e819ba6.md.png" srcset="/img/loading.gif" lazyload alt="image-20230822162739226"></p>
+<p>前面还是接收数据，接着会调<code>oldDispatch()</code>:</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/275901a46a4cb7c12f85137e55ea6793.png" srcset="/img/loading.gif" lazyload alt="image-20230822162922253"></p>
+<p>最后调用了<code>this.skel.dispatch()</code>,此时的<code>this.skel</code>为刚刚创建的<code>RegistryImpl_Skel</code>对象，接着跟进：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/1940958287a24a2e3ac4012d570b37a2.png" srcset="/img/loading.gif" lazyload alt="image-20230822163235287"></p>
+<p><img src="https://ice.frostsky.com/2023/08/22/8fa89c502acee602776f65be69d4a756.png" srcset="/img/loading.gif" lazyload alt="image-20230822163348059"></p>
+<p>这里就是真正处理请求的核心了，<code>var3</code>是传递过来的int类型的参数，在这里有如下对应关系(附代码)：</p>
+<ul>
+<li><strong>0—&gt;bind</strong></li>
+<li><strong>1—&gt;list</strong></li>
+<li><strong>2—&gt;lookup</strong></li>
+<li><strong>3—&gt;rebind</strong></li>
+<li><strong>4—&gt;unbind</strong></li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">switch</span> (var3) &#123;<br>                <span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<br>                    RegistryImpl.checkAccess(<span class="hljs-string">&quot;Registry.bind&quot;</span>);<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        var9 = var2.getInputStream();<br>                        var7 = (String)var9.readObject();<br>                        var80 = (Remote)var9.readObject();<br>                    &#125; <span class="hljs-keyword">catch</span> (ClassNotFoundException | IOException var77) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnmarshalException</span>(<span class="hljs-string">&quot;error unmarshalling arguments&quot;</span>, var77);<br>                    &#125; <span class="hljs-keyword">finally</span> &#123;<br>                        var2.releaseInputStream();<br>                    &#125;<br><br>                    var6.bind(var7, var80);<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        var2.getResultStream(<span class="hljs-literal">true</span>);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125; <span class="hljs-keyword">catch</span> (IOException var76) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MarshalException</span>(<span class="hljs-string">&quot;error marshalling return&quot;</span>, var76);<br>                    &#125;<br>                <span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br>                    var2.releaseInputStream();<br>                    String[] var79 = var6.list();<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        <span class="hljs-type">ObjectOutput</span> <span class="hljs-variable">var81</span> <span class="hljs-operator">=</span> var2.getResultStream(<span class="hljs-literal">true</span>);<br>                        var81.writeObject(var79);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125; <span class="hljs-keyword">catch</span> (IOException var75) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MarshalException</span>(<span class="hljs-string">&quot;error marshalling return&quot;</span>, var75);<br>                    &#125;<br>                <span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:<br>                    <span class="hljs-keyword">try</span> &#123;<br>                        var8 = var2.getInputStream();<br>                        var7 = (String)var8.readObject();<br>                    &#125; <span class="hljs-keyword">catch</span> (ClassNotFoundException | IOException var73) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnmarshalException</span>(<span class="hljs-string">&quot;error unmarshalling arguments&quot;</span>, var73);<br>                    &#125; <span class="hljs-keyword">finally</span> &#123;<br>                        var2.releaseInputStream();<br>                    &#125;<br><br>                    var80 = var6.lookup(var7);<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        <span class="hljs-type">ObjectOutput</span> <span class="hljs-variable">var82</span> <span class="hljs-operator">=</span> var2.getResultStream(<span class="hljs-literal">true</span>);<br>                        var82.writeObject(var80);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125; <span class="hljs-keyword">catch</span> (IOException var72) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MarshalException</span>(<span class="hljs-string">&quot;error marshalling return&quot;</span>, var72);<br>                    &#125;<br>                <span class="hljs-keyword">case</span> <span class="hljs-number">3</span>:<br>                    RegistryImpl.checkAccess(<span class="hljs-string">&quot;Registry.rebind&quot;</span>);<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        var9 = var2.getInputStream();<br>                        var7 = (String)var9.readObject();<br>                        var80 = (Remote)var9.readObject();<br>                    &#125; <span class="hljs-keyword">catch</span> (ClassNotFoundException | IOException var70) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnmarshalException</span>(<span class="hljs-string">&quot;error unmarshalling arguments&quot;</span>, var70);<br>                    &#125; <span class="hljs-keyword">finally</span> &#123;<br>                        var2.releaseInputStream();<br>                    &#125;<br><br>                    var6.rebind(var7, var80);<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        var2.getResultStream(<span class="hljs-literal">true</span>);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125; <span class="hljs-keyword">catch</span> (IOException var69) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MarshalException</span>(<span class="hljs-string">&quot;error marshalling return&quot;</span>, var69);<br>                    &#125;<br>                <span class="hljs-keyword">case</span> <span class="hljs-number">4</span>:<br>                    RegistryImpl.checkAccess(<span class="hljs-string">&quot;Registry.unbind&quot;</span>);<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        var8 = var2.getInputStream();<br>                        var7 = (String)var8.readObject();<br>                    &#125; <span class="hljs-keyword">catch</span> (ClassNotFoundException | IOException var67) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnmarshalException</span>(<span class="hljs-string">&quot;error unmarshalling arguments&quot;</span>, var67);<br>                    &#125; <span class="hljs-keyword">finally</span> &#123;<br>                        var2.releaseInputStream();<br>                    &#125;<br><br>                    var6.unbind(var7);<br><br>                    <span class="hljs-keyword">try</span> &#123;<br>                        var2.getResultStream(<span class="hljs-literal">true</span>);<br>                        <span class="hljs-keyword">break</span>;<br>                    &#125; <span class="hljs-keyword">catch</span> (IOException var66) &#123;<br>                        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">MarshalException</span>(<span class="hljs-string">&quot;error marshalling return&quot;</span>, var66);<br>                    &#125;<br>                <span class="hljs-keyword">default</span>:<br>                    <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">UnmarshalException</span>(<span class="hljs-string">&quot;invalid method number&quot;</span>);<br>            &#125;<br></code></pre></td></tr></table></figure>
+
+<p>在这里会对每个调用的方法进行处理，比如你调用了bind方法，就会先readObject反序列化你床哟来的序列化对象，之后再调用<code>var6.bind</code>来注册服务，此时的<code>var6</code>是<code>RegistryImpl</code>对象，这是调用<code>createRegistry</code>获得的。</p>
+<p>到这里我们也就明白了，其实无论是<code>客户端</code>还是<code>服务端</code>，最终调用注册中心的方法都是通过对创建的<code>RegistryImpl</code>对象的调用。通过上面那部分，我们已经分析完了当注册中心监听的端口被请求时，本地是如何处理这些请求的。</p>
+<h3 id="远程获取注册中心"><a href="#远程获取注册中心" class="headerlink" title="远程获取注册中心"></a>远程获取注册中心</h3><p>通过<code>getRegistry</code>方法获得的对象是<code>RegistryImpl_Stub</code>对象，与通过<code>createRegistry</code>获得的对象不同，<code>createRegistry</code>获得的是<code>RegistryImpl</code>对象。</p>
+<p>当我们调用这两者的方法时，其对应的处理方式也十分不同，以bind方法举例，通过createRegistry获得的注册中心调用bind方法十分简单：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/bf38c474f3b452c4d280ea8cdfac025e.png" srcset="/img/loading.gif" lazyload alt="image-20230822165156451"></p>
+<p>我的这个JDK版本比较低，在稍微高一点的版本，在bind中首先会进行<code>checkAccess</code>，里面有一些判断，会对你当前的权限，来源IP进行判断，在高版本JDK中不允许除了localhost之外的地址注册服务，也是在这里进行判断的。之后就是判断这个键是否被绑定过，如果被绑定则抛异常，反之则将键和对象值都put到Hashtable中。</p>
+<p>如果是远程调用bind方法，就比较麻烦了。测试伪代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-type">Registry</span> <span class="hljs-variable">registry</span> <span class="hljs-operator">=</span> LocateRegistry.createRegistry(<span class="hljs-number">8888</span>);<br><span class="hljs-type">Registry</span> <span class="hljs-variable">reg</span> <span class="hljs-operator">=</span> LocateRegistry.getRegistry(<span class="hljs-string">&quot;127.0.0.1&quot;</span>,<span class="hljs-number">8888</span>);<br>reg.bind(<span class="hljs-string">&quot;name&quot;</span>,obj)<br></code></pre></td></tr></table></figure>
+
+<p>这里我先创建了注册中心，之后通过<code>getRegistry</code>的方式远程获取注册中心，此时获得到的对象为<code>RegistryImpl_Stub</code>，跟入其<code>bind</code>方法：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/088ff2e013a57161c9a63e29cc760854.png" srcset="/img/loading.gif" lazyload alt="image-20230822170127462"></p>
+<p>首先会调用<code>newCall</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/b1258f00c2992f113eb0e2f28612aa81.png" srcset="/img/loading.gif" lazyload alt="image-20230822170303837"></p>
+<p>注意这里的<code>var3</code>，前面说过，0对应的是bind方法，此时的var3就代表了bind方法对应的数字。</p>
+<p>在<code>newConnection</code>这里，会写入一些已经约定好的数据，比如ip、端口等，在<code>StreamRemoteCall</code>里，同样会写入一些数据：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/d998899f7c3e8656c6c9708ca3dae8bf.png" srcset="/img/loading.gif" lazyload alt="image-20230822170627293"></p>
+<p>这里在最开始写入了80，也就和我们上边分析时说的80对上了，然后还会写一些数据比如要调用的方法所对应的num和ObjID之类的。</p>
+<p>当调用完这些之后，回到bind方法：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/cee9cd6c9403b31713239bd8e92121b5.png" srcset="/img/loading.gif" lazyload alt="image-20230822170803058"></p>
+<p>此时会写入两个内容：</p>
+<ul>
+<li>序列化后的<code>var1</code>；<code>var1</code>为我们要绑定远程对象对应的名称</li>
+<li>序列化后的<code>var2</code>；<code>var2</code>为我们要绑定的远程对象</li>
+</ul>
+<p>在<code>invoke</code>这里会把请求发出去，接着我们看看注册中心在收到这条请求后是如何进行处理的，前面说了会调用Skel.dispatch来处理请求，我们直接看这个就可以了。</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/8fa89c502acee602776f65be69d4a756.png" srcset="/img/loading.gif" lazyload alt="image-20230822163348059"></p>
+<p>注册中心首先会read两个Object，第一个即我们刚刚write进去的字符串对象，第二个就是远程对象了，接着调用<code>var6.bind</code>来绑定服务，<code>var6</code>即<code>RegistryImpl</code>对象，他是如何绑定服务的在上边写了。</p>
+<p>至此，我们已经了解了当注册中心的方法被调用时，远程获取和本地获取的差异是什么。</p>
+<h3 id="客户端与服务端的通信"><a href="#客户端与服务端的通信" class="headerlink" title="客户端与服务端的通信"></a>客户端与服务端的通信</h3><p>客户端与服务端的通信只发生在调用远程方法时。此时是客户端的远程代理对象与的Skel进行通信。</p>
+<p>我们在客户端获取的是注册中心封装好的代理对象，所以默认会调用代理对象的invoke方法：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/275fe0c0aa0e7778e5e4615266113f1f.png" srcset="/img/loading.gif" lazyload alt="image-20230822190737766"></p>
+<p>在这里会判断你调用的方法是所有对象都有的，还是只有远程对象才有的，如果是前者，则进入<code>invokeObjectMethod</code>中，后者则进入<code>invokeRemoteMethod</code>中。</p>
+<p>跟入RemoteObjectInvocationHandle.<code>invokeRemoteMethod</code>中：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/212d78cbaef92f428dc4a68b4c883816.png" srcset="/img/loading.gif" lazyload alt="image-20230822191142591"></p>
+<p>在这里会调用this.ref.invoke，并把proxy、method、args以及method的hash传过去，this.ref是在lookup时获取到的远程对象绑定的一些端口信息。跟进UnicastRef.<code>invoke</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/965c1bdafb6720c33e1abb54dfe78fb0.png" srcset="/img/loading.gif" lazyload alt="image-20230822192250289"></p>
+<p>同样的，在newConnection这里会发送一些约定好了的数据。接着在<code>marshaValue</code>这里，会将我们调用的方法、要传递的参数序列化写到连接中，如果传递的参数是对象，就会写入序列化对象到这里：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/2760ce3fafec7c5457691bafc4eadb52.png" srcset="/img/loading.gif" lazyload alt="image-20230822192434594"></p>
+<p><img src="https://ice.frostsky.com/2023/08/22/9db8a8e76868723515c6c4f2529cd254.png" srcset="/img/loading.gif" lazyload alt="image-20230822192608384"></p>
+<p>接着会调用StreamRemoteCall.<code>executeCall</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/a873c1079afe69942f694b99facb08bd.png" srcset="/img/loading.gif" lazyload alt="image-20230822192852263"></p>
+<p>在this.releaseOutputStream方法中，会读取服务端执行的结果：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/dce65865b6bd708792bb4e505c6b9b07.png" srcset="/img/loading.gif" lazyload alt="image-20230822192932757"></p>
+<p>在this.out.flush时，会把之前写进去的数据发出去，服务端会返回执行结果</p>
+<p>在调用完<code>executeCall</code>后，会进入下边这个方法，把数据取出来：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/cbaeec9ab778702b00e8db09ce989024.png" srcset="/img/loading.gif" lazyload alt="image-20230822193158889"></p>
+<p>调用了<code>unmarsharValue</code>方法，把数据取出来，用的是jdk自带的readObject：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/ca31e6155ff4c5f8df5fe0bd450079cf.png" srcset="/img/loading.gif" lazyload alt="image-20230822193348959"></p>
+<p>至此，我们清楚了客户端是如何和服务端通信的。还有服务端又是如何与客户端进行通信的呢？</p>
+<p>当客户端在与服务端通信时，服务端实际处理请求的位置在：UnicastServerRef.<code>dispatch</code>：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/0b766de6573b2a12a7c7c4787b5fed90.png" srcset="/img/loading.gif" lazyload alt="image-20230822194020581"></p>
+<p>在这里会调用<code>unmarshaValue</code>，对请求传来的参数进行处理：</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/695620729bcad38c89ea2bc0fbef8067.png" srcset="/img/loading.gif" lazyload alt="image-20230822194335117"></p>
+<p><img src="https://ice.frostsky.com/2023/08/22/fed9f7da4227336da7da5a83d6cdddd0.png" srcset="/img/loading.gif" lazyload alt="image-20230822194354798"></p>
+<p>在这里会判断参数的数据类型，如果是Object的话，则会反序列化，所以在这里我们如果能够找到Server注册的远程对象中，如果某个方法传递的参数类型是Object，在服务端这里会被反序列化，此时即可造成RCE。</p>
+<p><img src="https://ice.frostsky.com/2023/08/22/b54078598bee97a13408fbc92bca4055.png" srcset="/img/loading.gif" lazyload alt="image-20230822194843997"></p>
+<p>最终通过调用invoke，来调用远程对象的方法。</p>
+<p>至此，我们清楚了这三者之间的通信过程</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>没人比我更懂RMI(中)</div>
+      <div>http://example.com/2023/08/22/没人比我更懂RMI2/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Yuanyi</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月22日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/24/%E6%B5%85%E6%9E%90ApacheJackrabbit/" title="浅析Apache Jackrabbit(CVE-2023-37895)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">浅析Apache Jackrabbit(CVE-2023-37895)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/08/15/%E6%B2%A1%E4%BA%BA%E6%AF%94%E6%88%91%E6%9B%B4%E6%87%82RMI/" title="没人比我更懂RMI(上)">
+                        <span class="hidden-mobile">没人比我更懂RMI(上)</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/shubiao.js"></script>
+<script src="/js/Hcaidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

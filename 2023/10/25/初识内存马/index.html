@@ -1,0 +1,849 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yuanyi">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="学习内存马之前你必须知道的知识JavaWeb三大件当JavaWeb接收到请求时会依次经过 Listener  —&gt; Filter —&gt; Servlet Listener简介Java Web 开发中的监听器（Listener）就是 Application、Session 和 Request 三大对象创建、销毁或者往其中添加、修改、删除属性时自动执行代码的功能组件。 ServletCont">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识内存马">
+<meta property="og:url" content="http://example.com/2023/10/25/%E5%88%9D%E8%AF%86%E5%86%85%E5%AD%98%E9%A9%AC/index.html">
+<meta property="og:site_name" content="Myloveguoguo">
+<meta property="og:description" content="学习内存马之前你必须知道的知识JavaWeb三大件当JavaWeb接收到请求时会依次经过 Listener  —&gt; Filter —&gt; Servlet Listener简介Java Web 开发中的监听器（Listener）就是 Application、Session 和 Request 三大对象创建、销毁或者往其中添加、修改、删除属性时自动执行代码的功能组件。 ServletCont">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/6d4449465499c6afd9ae26f7a9c1f185.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/f4d63124cec3f9b9fd6fba648346cf25.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/7f4b4458ea66cb54b7f40e58e423a156.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/073ffe27f239822d2a31649cff8f34b9.md.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/1b94dc68288b74a6a659a1765322d4cc.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/f05b2d4628e80b4b99e78a0f62e1ce93.md.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/f4f434b53380eded1250d6419e101dab.png">
+<meta property="og:image" content="https://i.mji.rip/2023/10/25/42531669844863c0a1404fdf0bcb2dd0.md.png">
+<meta property="article:published_time" content="2023-10-25T11:39:38.000Z">
+<meta property="article:modified_time" content="2023-10-25T11:56:57.562Z">
+<meta property="article:author" content="Yuanyi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://i.mji.rip/2023/10/25/6d4449465499c6afd9ae26f7a9c1f185.png">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>初识内存马 - Myloveguoguo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/shubiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Myloveguoguo</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="初识内存马"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-10-25 19:39" pubdate>
+          2023年10月25日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          9.6k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          81 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">初识内存马</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="学习内存马之前你必须知道的知识"><a href="#学习内存马之前你必须知道的知识" class="headerlink" title="学习内存马之前你必须知道的知识"></a>学习内存马之前你必须知道的知识</h1><h2 id="JavaWeb三大件"><a href="#JavaWeb三大件" class="headerlink" title="JavaWeb三大件"></a>JavaWeb三大件</h2><p>当JavaWeb接收到请求时会依次经过 Listener  —&gt; Filter —&gt; Servlet</p>
+<h3 id="Listener"><a href="#Listener" class="headerlink" title="Listener"></a>Listener</h3><h4 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h4><p>Java Web 开发中的监听器（Listener）就是 Application、Session 和 Request 三大对象创建、销毁或者往其中添加、修改、删除属性时自动执行代码的功能组件。</p>
+<p>ServletContextListener：对Servlet上下文的创建和销毁进 行监听；ServletContextAttributeListener：监听 Servlet 上下文属性的添加、删除和替换；</p>
+<p>HttpSessionListener：对 Session 的创建和销毁进行监听。Session 的销毁有两种情况，一个中 Session 超时，还有一种是通过调用 Session 对象的 invalidate() 方法使 session 失效。</p>
+<p>HttpSessionAttributeListener：对 Session 对象中属性的添加、删除和替换进行监听；</p>
+<p>ServletRequestListener：对请求对象的初始化和销毁进行监听；ServletRequestAttributeListener：对请求对象属性的添加、删除和替换进行监听。</p>
+<h4 id="用途"><a href="#用途" class="headerlink" title="用途"></a>用途</h4><p>可以使用监听器监听客户端的请求、服务端的操作等。通过监听器，可以自动出发一些动作，比如监听在线的用户数量，统计网站访问量、网站访问监控等。</p>
+<h3 id="Filter"><a href="#Filter" class="headerlink" title="Filter"></a>Filter</h3><h4 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h4><p>filter 也称之为过滤器，是对 Servlet 技术的一个强补充，其主要功能是在 HttpServletRequest 到达 Servlet 之前，拦截客户的 HttpServletRequest ，根据需要检查 HttpServletRequest，也可以修改 HttpServletRequest 头和数据；在 HttpServletResponse 到达客户端之前，拦截 HttpServletResponse ，根据需要检查 HttpServletResponse，也可以修改 HttpServletResponse 头和数据。</p>
+<h4 id="基本工作原理"><a href="#基本工作原理" class="headerlink" title="基本工作原理"></a>基本工作原理</h4><p>1、Filter 程序是一个实现了特殊接口的 Java 类，与 Servlet 类似，也是由 Servlet 容器进行调用和执行的。</p>
+<p>2、当在 web.xml 注册了一个 Filter 来对某个 Servlet 程序进行拦截处理时，它可以决定是否将请求继续传递给 Servlet 程序，以及对请求和响应消息是否进行修改。</p>
+<p>3、当 Servlet 容器开始调用某个 Servlet 程序时，如果发现已经注册了一个 Filter 程序来对该 Servlet 进行拦截，那么容器不再直接调用 Servlet 的 service 方法，而是调用 Filter 的 doFilter 方法，再由 doFilter 方法决定是否去激活 service 方法。</p>
+<p>4、但在 Filter.doFilter 方法中不能直接调用 Servlet 的 service 方法，而是调用 FilterChain.doFilter 方法来激活目标 Servlet 的 service 方法，FilterChain 对象时通过 Filter.doFilter 方法的参数传递进来的。</p>
+<p>5、只要在 Filter.doFilter 方法中调用 FilterChain.doFilter 方法的语句前后增加某些程序代码，这样就可以在 Servlet 进行响应前后实现某些特殊功能。</p>
+<p>6、如果在 Filter.doFilter 方法中没有调用 FilterChain.doFilter 方法，则目标 Servlet 的 service 方法不会被执行，这样通过 Filter 就可以阻止某些非法的访问请求。</p>
+<h4 id="Filter的实现"><a href="#Filter的实现" class="headerlink" title="Filter的实现"></a>Filter的实现</h4><p>Filter是一个接口，实现一个Filter只需要重写<code>init</code>、<code>doFilter</code>、<code>destroy</code>方法即可，其中过滤逻辑都在<code>doFilter</code>方法中实现。</p>
+<p><code>Filter</code>的配置类似于<code>Servlet</code>，由<code>&lt;filter&gt;</code>和<code>&lt;filter-mapping&gt;</code>两组标签组成，如果Servlet版本大于3.0同样可以使用注解的方式配置Filter。</p>
+<h4 id="Filter-的生命周期"><a href="#Filter-的生命周期" class="headerlink" title="Filter 的生命周期"></a>Filter 的生命周期</h4><p>与 servlet 一样，Filter 的创建和销毁也由 Web 容器负责。Web 应用程序启动时，Web 服务器将创建 Filter 的实例对象，并调用其 init() 方法，读取 web.xml 配置，完成对象的初始化功能，从而为后续的用户请求作好拦截的准备工作（filter 对象只会创建一次，init 方法也只会执行一次）。开发人员通过init方法的参数，可获得代表当前filter配置信息的FilterConfig对象。Filter 对象创建后会驻留在内存，当 Web 应用移除或服务器停止时才销毁。在 Web 容器卸载 Filter 对象之前被调用。该方法在 Filter 的生命周期中仅执行一次。在这个方法中，可以释放过滤器使用的资源。</p>
+<h4 id="Filter链"><a href="#Filter链" class="headerlink" title="Filter链"></a>Filter链</h4><p>当多个 Filter 同时存在的时候，组成了 Filter 链。Web 服务器根据 Filter 在 web.xml 文件中的注册顺序，决定先调用哪个 Filter。当第一个 Filter 的 doFilter 方法被调用时，web服务器会创建一个代表 Filter 链的 FilterChain 对象传递给该方法，通过判断 FilterChain 中是否还有 Filter 决定后面是否还调用 Filter。</p>
+<p><img src="https://i.mji.rip/2023/10/25/6d4449465499c6afd9ae26f7a9c1f185.png" srcset="/img/loading.gif" lazyload alt="image-20231025195002798"></p>
+<h3 id="Servlet"><a href="#Servlet" class="headerlink" title="Servlet"></a>Servlet</h3><h4 id="简介-2"><a href="#简介-2" class="headerlink" title="简介"></a>简介</h4><p><code>Servlet</code>是在 <code>Java Web</code>容器中运行的<code>小程序</code>,通常我们用<code>Servlet</code>来处理一些较为复杂的服务器端的业务逻辑。<code>Servlet</code>是<code>Java EE</code>的核心,也是所有的MVC框架的实现的根本。</p>
+<h4 id="请求的处理过程"><a href="#请求的处理过程" class="headerlink" title="请求的处理过程"></a>请求的处理过程</h4><p>客户端发起一个 http 请求，比如 get 类型。</p>
+<p>Servlet 容器接收到请求，根据请求信息，封装成 HttpServletRequest 和HttpServletResponse 对象。这步也就是我们的传参。</p>
+<p>Servlet容器调用 HttpServlet 的 init() 方法，init 方法只在第一次请求的时候被调用。</p>
+<p>Servlet 容器调用 service() 方法。</p>
+<p>service() 方法根据请求类型，这里是get类型，分别调用doGet或者doPost方法，这里调用doGet方法。</p>
+<p>doXXX 方法中是我们自己写的业务逻辑。</p>
+<p>业务逻辑处理完成之后，返回给 Servlet 容器，然后容器将结果返回给客户端。</p>
+<p>容器关闭时候，会调用 destory 方法。</p>
+<h4 id="Servlet的定义"><a href="#Servlet的定义" class="headerlink" title="Servlet的定义"></a>Servlet的定义</h4><p><strong>web.xml的配置：</strong></p>
+<p><code>Servlet3.0</code> 之前的版本都需要在<code>web.xml</code> 中配置<code>servlet标签</code>，<code>servlet标签</code>是由<code>servlet</code>和<code>servlet-mapping</code>标签组成的,两者之间通过在<code>servlet</code>和<code>servlet-mapping</code>标签中同样的<code>servlet-name</code>名称来实现关联的。</p>
+<p><strong>注解配置：</strong></p>
+<p>值得注意的是在 Servlet 3.0 之后( Tomcat7+)可以使用注解方式配置 Servlet 了,在任意的Java类添加<code>javax.servlet.annotation.WebServlet</code>注解即可。</p>
+<p>基于注解的方式配置Servlet实质上是对基于<code>web.xml</code>方式配置的简化，极大的简化了Servlet的配置方式，但是也提升了对Servlet配置管理的难度，因为我们不得不去查找所有包含了<code>@WebServlet</code>注解的类来寻找Servlet的定义，而不再只是查看<code>web.xml</code>中的<code>servlet</code>标签配置。</p>
+<p><strong>实现：</strong></p>
+<p>定义一个 Servlet 很简单，只需要继承<code>javax.servlet.http.HttpServlet</code>类并重写<code>doXXX</code>(如<code>doGet、doPost</code>)方法或者<code>service</code>方法就可以了，其中需要注意的是重写<code>HttpServlet</code>类的<code>service</code>方法可以获取到上述七种Http请求方法的请求。（doGet&#x2F;doPost&#x2F;doDelete&#x2F;doHead&#x2F;doPut&#x2F;doOptions&#x2F;doTrace）</p>
+<h4 id="servlet生命周期"><a href="#servlet生命周期" class="headerlink" title="servlet生命周期"></a>servlet生命周期</h4><p>1）服务器启动时 (web.xml 中配置 load-on-startup&#x3D;1，默认为 0)或者第一次请求该 servlet 时，就会初始化一个 Servlet 对象，也就是会执行初始化方法 init(ServletConfig conf)。</p>
+<p>2）servlet 对象去处理所有客户端请求，在 service(ServletRequest req，ServletResponse res) 方法中执行</p>
+<p>3）服务器关闭时，销毁这个 servlet 对象，执行 destroy() 方法。</p>
+<p>4）由 JVM 进行垃圾回收。</p>
+<h3 id="Request-和-Response"><a href="#Request-和-Response" class="headerlink" title="Request 和 Response"></a>Request 和 Response</h3><p>在<code>B/S架构</code>中最重要的就是浏览器和服务器端交互，<code>Java EE</code>将其封装为<code>请求</code>和<code>响应对象</code>，即 <code>request(HttpServletRequest)</code> 和 <code>response(HttpServletResponse)</code>。</p>
+<p><code>HttpServletRequest</code>对象用于处理来自客户端的请求，当客户端通过HTTP协议访问服务器时，HTTP 中的所有信息都封装在这个对象中，通过<code>HttpServletRequest</code>对象可以获取到客户端请求的所有信息。</p>
+<p><code>HttpServletResponse</code>对象用于响应客户端的请求，通过<code>HttpServletResponse</code>对象可以处理服务器端对客户端请求响应。</p>
+<h3 id="Filter和Servlet总结："><a href="#Filter和Servlet总结：" class="headerlink" title="Filter和Servlet总结："></a>Filter和Servlet总结：</h3><ol>
+<li><code>Filter</code>和<code>Servlet</code>都需要在<code>web.xml</code>或<code>注解</code>(<code>@WebFilter</code>、<code>@WebServlet</code>)中配置，而且配置方式是非常的相似的。</li>
+<li><code>Filter</code>和<code>Servlet</code>都可以处理来自Http请求的请求，两者都有<code>request</code>、<code>response</code>对象。</li>
+<li><code>Filter</code>和<code>Servlet</code>基础概念不一样，<code>Servlet</code>定义是容器端小程序，用于直接处理后端业务逻辑，而<code>Filter</code>的思想则是实现对Java Web请求资源的拦截过滤。</li>
+<li><code>Filter</code>和<code>Servlet</code>虽然概念上不太一样，但都可以处理Http请求，都可以用来实现MVC控制器(<code>Struts2</code>和<code>Spring</code>框架分别基于<code>Filter</code>和<code>Servlet</code>技术实现的)。</li>
+<li>一般来说<code>Filter</code>通常配置在<code>MVC</code>、<code>Servlet</code>和<code>JSP</code>请求前面，常用于后端权限控制、统一的Http请求参数过滤(<code>统一的XSS</code>、<code>SQL注入</code>、<code>Struts2命令执行</code>等攻击检测处理)处理，其核心主要体现在请求过滤上，而<code>Servlet</code>更多的是用来处理后端业务请求上。</li>
+</ol>
+<h2 id="Tomcat-基础介绍"><a href="#Tomcat-基础介绍" class="headerlink" title="Tomcat 基础介绍"></a>Tomcat 基础介绍</h2><h3 id="什么是-Tomcat"><a href="#什么是-Tomcat" class="headerlink" title="什么是 Tomcat"></a>什么是 Tomcat</h3><p>大致可以通过对标 Apache 来看一看。</p>
+<p>Apache 是 web 服务器（静态解析，如 HTML），tomcat 是 java 应用服务器（动态解析，如 JSP）</p>
+<p>Tomcat 只是一个 servlet(jsp 也翻译成 servlet)容器，可以认为是 apache 的扩展，但是可以独立于 apache 运行。</p>
+<ul>
+<li>​	一句话概括一下，就是 Web 服务器，比较不稳定，但是业务能力比较强。</li>
+</ul>
+<h3 id="Tomcat-与-Servlet-的关系"><a href="#Tomcat-与-Servlet-的关系" class="headerlink" title="Tomcat 与 Servlet 的关系"></a>Tomcat 与 Servlet 的关系</h3><p>我们根据上面的基础知识可以知道Tomcat 是Web应用服务器，是一个Servlet&#x2F;JSP容器，而Servlet容器从上到下分别是 Engine、Host、Context、Wrapper。</p>
+<p>在Tomcat中Wrapper代表一个独立的servlet实例，StandardWrapper是Wrapper接口的标准实现类（StandardWrapper 的主要任务就是载入Servlet类并且进行实例化），同时其从ContainerBase类继承过来，表示他是一个容器，只是他是最底层的容器，不能再含有任何的子容器了，且其父容器只能是context。而我们在也就是需要在这里去载入我们自定义的Servlet加载我们的内存马。</p>
+<h2 id="Tomcat-架构"><a href="#Tomcat-架构" class="headerlink" title="Tomcat 架构"></a>Tomcat 架构</h2><h3 id="Tomcat-架构原理"><a href="#Tomcat-架构原理" class="headerlink" title="Tomcat 架构原理"></a>Tomcat 架构原理</h3><p>tomcat的框架如下图所示，主要有server、service、connector、container 四个部分 </p>
+<p><img src="https://i.mji.rip/2023/10/25/f4d63124cec3f9b9fd6fba648346cf25.png" srcset="/img/loading.gif" lazyload alt="image-20231025195032719"></p>
+<p>图中可以看出 Tomcat 的心脏是两个组件：Connector 和 Container：<br>Connector 主要负责对外交流，进行 Socket 通信(基于 TCP&#x2F;IP)，解析 HTTP 报文，对应下图中的http服务器；</p>
+<p>Container 主要处理 Connector 接受的请求，主要是处理内部事务，加载和管理 Servlet，由 Servlet 具体负责处理 Request 请求，对应下图中的servlet容器。</p>
+<p><img src="https://i.mji.rip/2023/10/25/7f4b4458ea66cb54b7f40e58e423a156.png" srcset="/img/loading.gif" lazyload alt="image-20231025195050119"></p>
+<p>以上两个功能，分别对应着tomcat的两个核心组件连接器（Connector）和容器（Container），连接器负责对外交流（完成 Http 服务器功能），容器负责内部处理（完成 Servlet 容器功能）。</p>
+<p><img src="https://i.mji.rip/2023/10/25/073ffe27f239822d2a31649cff8f34b9.md.png" srcset="/img/loading.gif" lazyload alt="image-20231025195111671"></p>
+<h3 id="server"><a href="#server" class="headerlink" title="server"></a>server</h3><p>即服务器，代表整个 Tomcat 服务器，它要能够提供一个接口让其它程序能够访问到这个 Service 集合、同时要维护它所包含的所有 Service 的生命周期，包括如何初始化、如何结束服务、如何找到别人要访问的 Service。还有其它的一些次要的任务，如您住在这个地方要向当地政府去登记啊、可能还有要配合当地公安机关日常的安全检查什么的。</p>
+<p>一个 Tomcat 只有一个 Server Server 中包含至少一个 Service 组件，用于提供具体服务。</p>
+<h3 id="service"><a href="#service" class="headerlink" title="service"></a>service</h3><p>Service 主要是为了关联 Connector 和 Container，同时会初始化它下面的其它组件，在 Connector 和 Container 外面多包一层，把它们组装在一起，向外面提供服务，一个 Service 可以设置多个 Connector，但是只能有一个 Container 容器。</p>
+<p>Tomcat 中 Service 接口的标准实现类是 StandardService ，它不仅实现了 Service 借口同时还实现了 Lifecycle 接口，这样它就可以控制它下面的组件的生命周期了</p>
+<h3 id="connecter"><a href="#connecter" class="headerlink" title="connecter"></a>connecter</h3><p>Connector 组件是 Tomcat 中两个核心组件之一，它的主要任务是负责接收浏览器的发过来的 tcp 连接请求，创建一个 Request 和 Response 对象分别用于和请求端交换数据，然后会产生一个线程来处理这个请求并把产生的 Request 和 Response 对象传给处理这个请求的线程，处理这个请求的线程就是 Container 组件要做的事了。</p>
+<p>根据运行的逻辑图，我们也能看到连接器 connector 主要有三个功能：</p>
+<p>socket 通信<br>解析处理应用层协议，如将 socket 连接封装成 request 和 response 对象，后续交给 Container 来处理<br>将 Request 转换为 ServletRequest，将 Response 转换为 ServletResponse</p>
+<p>这些，其实在 shiro 开发的过程当中也是用到这个了的，而且当时我记得还特别容易写错类名。</p>
+<p>其中 Tomcat 设计了三个组件，其负责功能如下：</p>
+<ul>
+<li>EndPoint: 负责网络通信，将字节流传递给 Processor；</li>
+<li>Processor: 负责处理字节流生成 Tomcat Request 对象，将 Tomcat Request 对象传递给 Adapter；</li>
+<li>Adapter: 负责将 Tomcat Request 对象转化成 ServletRequest 对象，传递给容器。</li>
+</ul>
+<h4 id="Adapter-组件"><a href="#Adapter-组件" class="headerlink" title="Adapter 组件"></a>Adapter 组件</h4><p>由于协议的不同，Tomcat 定义了自己的 Request 类来存放请求信息，但是这个不是标准的 ServletRequest。于是需要使用 Adapter 将 Tomcat Request 对象转成 ServletRequest 对象，然后就能调用容器的 service 方法。</p>
+<p>简而言之，Endpoint 接收到 Socket 连接后，生成一个 SocketProcessor 任务提交到线程池进行处理，SocketProcessor 的 run 方法将调用 Processor 组件进行应用层协议的解析，Processor 解析后生成 Tomcat Request 对象，然后会调用 Adapter 的 Service 方法，方法内部通过如下代码将 Request 请求传递到容器中。</p>
+<p>connector.getService().getContainer().getPipeline().getFirst().invoke(request, response);</p>
+<p>一个总的 Tomcat Connector 功能如图所示<img src="https://i.mji.rip/2023/10/25/1b94dc68288b74a6a659a1765322d4cc.png" srcset="/img/loading.gif" lazyload alt="image-20231025195129773"></p>
+<h3 id="Container"><a href="#Container" class="headerlink" title="Container"></a>Container</h3><p>Container（又名Catalina）用于处理Connector发过来的servlet连接请求，它是容器的父接口，所有子容器都必须实现这个接口，Container 容器的设计用的是典型的责任链的设计模式，它有四个子容器组件构成，分别是：Engine、Host、Context、Wrapper，这四个组件不是平行的，而是父子关系，Engine 包含 Host，Host 包含 Context，Context 包含 Wrapper。</p>
+<p><img src="https://i.mji.rip/2023/10/25/f05b2d4628e80b4b99e78a0f62e1ce93.md.png" srcset="/img/loading.gif" lazyload alt="image-20231025195153658"></p>
+<p>Tomcat 设计了 4 种容器: Engine、Host、Context、Wrapper，这四种容器是父子关系</p>
+<ul>
+<li>Engine: 最顶层容器组件，可以包含多个 Host。实现类为 org.apache.catalina.core.StandardEngine</li>
+<li>Host: 代表一个虚拟主机，每个虚拟主机和某个域名 Domain Name 相匹配，可以包含多个 Context。实现类为 org.apache.catalina.core.StandardHost</li>
+<li>Context: 一个 Context 对应于一个 Web 应用，可以包含多个 Wrapper。实现类为 org.apache.catalina.core.StandardContext</li>
+<li>Wrapper: 一个 Wrapper 对应一个 Servlet。负责管理 Servlet ，包括 Servlet 的装载、初始化、执行以及资源回收。实现类为 org.apache.catalina.core.StandardWrapper</li>
+</ul>
+<p>通常一个 Servlet class 对应一个 Wrapper，如果有多个 Servlet 就可以定义多个 Wrapper，如果有多个 Wrapper 就要定义一个更高的 Container。</p>
+<p>举个栗子，a.com和b.com分别对应着两个Host</p>
+<p><img src="https://i.mji.rip/2023/10/25/f4f434b53380eded1250d6419e101dab.png" srcset="/img/loading.gif" lazyload alt="image-20231025195214472"></p>
+<p>每一个 Context 都有唯一的 path。这里的 path 不是指 servlet 绑定的 WebServlet 地址，而是指独立的一个 Web 应用地址。就好比 Tomat 默认的 &#x2F; 地址和 &#x2F;manager 地址就是两个不同的 web 应用，所以对应两个不同的 Context。要添加 Context 需要在 server.xml 中配置 docbase。</p>
+<p>如下图所示， 在一个 web 应用中创建了 2 个 servlet 服务，WebServlet 地址分别是 &#x2F;Demo1 和 &#x2F;Demo2 。因为它们属于同一个 Web 应用所以 Context 一样，但访问地址不一样所以 Wrapper 不一样。&#x2F;manager 访问的 Web 应用是 Tomcat 默认的管理页面，是另外一个独立的 web 应用， 所以 Context 与前两个不一样。</p>
+<p><img src="https://i.mji.rip/2023/10/25/42531669844863c0a1404fdf0bcb2dd0.md.png" srcset="/img/loading.gif" lazyload alt="image-20231025195234445"></p>
+<h2 id="Tomcat-的类加载机制"><a href="#Tomcat-的类加载机制" class="headerlink" title="Tomcat 的类加载机制"></a>Tomcat 的类加载机制</h2><p>由于 Tomcat 中有多个 WebApp 同时要确保之间相互隔离，所以 Tomcat 的类加载机制也不是传统的双亲委派机制。</p>
+<p>Tomcat 自定义的类加载器 WebAppClassloader 为了确保隔离多个 WebApp 之间相互隔离，所以打破了双亲委托机制。每个 WebApp 用一个独有的 ClassLoader 实例来优先处理加载。它首先尝试自己加载某个类，如果找不到再交给父类加载器，其目的是优先加载 WEB 应用自己定义的类。</p>
+<p>同时为了防止 WEB 应用自己的类覆盖 JRE 的核心类，在本地 WEB 应用目录下查找之前，先使用 ExtClassLoader（使用双亲委托机制）去加载，这样既打破了双亲委托，同时也能安全加载类。</p>
+<h1 id="什么是内存马？"><a href="#什么是内存马？" class="headerlink" title="什么是内存马？"></a>什么是内存马？</h1><p>内存马又叫无文件马，闻名知其意。简单理解就是没有webshell文件落地的webshell。</p>
+<p>目前安全行业主要讨论的内存马主要分为以下几种方式：</p>
+<ul>
+<li>动态注册 servlet&#x2F;filter&#x2F;listener（使用 servlet-api 的具体实现）</li>
+<li>动态注册 interceptor&#x2F;controller（使用框架如 spring&#x2F;struts2）</li>
+<li>动态注册使用<strong>职责链</strong>设计模式的中间件、框架的实现（例如 Tomcat 的 Pipeline &amp; Valve，Grizzly 的 FilterChain &amp; Filter 等等）</li>
+<li>使用 java agent 技术写入字节码</li>
+</ul>
+<h1 id="内存马有哪些？"><a href="#内存马有哪些？" class="headerlink" title="内存马有哪些？"></a>内存马有哪些？</h1><ul>
+<li><p>传统Web应用型内存马</p>
+<ul>
+<li>Servlet型内存马 	—&gt;   动态注册Servlet及映射路由</li>
+<li>Filter型内存马        —&gt;   动态注册Filter及映射路由</li>
+<li>Listener型内存马   —&gt;   动态注册Listener</li>
+</ul>
+<p>JavaWeb应用将Servlet与其映射、处理类&#x2F;Filter与其映射、处理类&#x2F;Listener与其处理类存放在Context中，并在程序允许时进行查找和匹配。传统Web应用型内存马就是内存马的处理代码与指定的映射动态的添加在Context中的关键位置中，使程序处理一个在本地代码、配置文件中不存在的恶意逻辑。</p>
+</li>
+<li><p>框架型内存马</p>
+<ul>
+<li>Spring Controller型内存马    —&gt;    动态注册Controller及映射路由</li>
+<li>Spring Interceptor型内存马  —&gt;    动态注册Interceptor及映射路由</li>
+<li>Spring Webflux型内存马       —&gt;     动态注册WebFilter及映射路由</li>
+</ul>
+<p>Spring MVC 使用Controller来接收用户的输入和封装Service，虽然有一部分开发习惯用Mapping来处理，但是这里通常代表处理一个用户请求的“端点”，类似于Servlet，而Interceptor拦截器类似Filter</p>
+<p>Spring Webflux 是Spring Framework5.0中引入的新的响应式web框架，它不依赖Servlet-API，但是也同样必须有Filter这种思想，实际就是Filter。</p>
+</li>
+<li><p>中间件型内存马</p>
+<ul>
+<li>Tomcat Valve 型内存马    —&gt;    动态注册Valve</li>
+<li>Tomcat Upgrade 型内存马    —&gt;     动态注册UpgradeProtocol</li>
+<li>Tomcat Executor 型内存马    —&gt;     动态替换全局Executor</li>
+<li>Tomcat Poller 型内存马    —&gt;     动态替换全局Poller</li>
+<li>Grizzly Filter 型内存马    —&gt;     动态注册Grizzly Filter及映射路由</li>
+</ul>
+<p>中间件的很多设计都是“流式”、“管道式”。一般称之为职责链模式，每个关键点都会将Request处理，并传递给下一个处理者。在这种模式下，攻击者可以向职责链中插入自己的恶意逻辑，实现内存马的驻留。</p>
+</li>
+<li><p>Agent 型内存马</p>
+<ul>
+<li>Agent型内存马     —&gt;  通过Hook并修改关键方法添加恶意逻辑</li>
+</ul>
+<p>这个可以参考我之前写的插桩文章，学习一下Agent基础之后会对后期学习Agent型内存马很有帮助。</p>
+</li>
+<li><p>其他内存马</p>
+<ul>
+<li>WebSocket型内存马    —&gt;    动态注册Websocket路由及处理逻辑</li>
+<li>Tomcat JSP型内存马    —&gt;    动态注册Tomcat JSP管理逻辑并实现驻留</li>
+<li>线程型内存马    —&gt;    动态添加一个无法杀死的线程</li>
+<li>RMI型内存马    —&gt;    动态启动一个RMI Registry</li>
+</ul>
+<p>对于WebSocket协议请求，JSP请求处理，各个中间件包含自己的逻辑，这些逻辑的具体实现也可以用来作为内存马的逻辑处理。</p>
+<p>线程型内存马在系统中启动一个永不停止的线程，此时关键类无法被GC，会一直存在目标系统中，执行实现预定义的逻辑。而RMI内存马启动一个RMI Registry 并绑定恶意类作为后门。</p>
+</li>
+</ul>
+<hr>
+<p>因为内存马这里个人想深入学习，所以后续会力所能及将每种内存马的实现过程和复现过程中遇到的坑点都分享出来。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>初识内存马</div>
+      <div>http://example.com/2023/10/25/初识内存马/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Yuanyi</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年10月25日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/11/09/CVE-2023-22515/" title="Confluence 属性覆盖导致权限绕过漏洞 (CVE-2023-22515)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Confluence 属性覆盖导致权限绕过漏洞 (CVE-2023-22515)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/10/09/Shiro550-CB/" title="Shiro550+CB">
+                        <span class="hidden-mobile">Shiro550+CB</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/shubiao.js"></script>
+<script src="/js/Hcaidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>

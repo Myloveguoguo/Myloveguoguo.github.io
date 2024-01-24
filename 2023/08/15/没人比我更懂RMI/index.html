@@ -1,0 +1,830 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=auto>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/fluid.png">
+  <link rel="icon" href="/img/fluid.png">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="author" content="Yuanyi">
+  <meta name="keywords" content="">
+  
+    <meta name="description" content="前言参考文章1 参考文章2 每篇鸡汤： 万事开头难，当走出第一步你会发现，其实事情并没有你想象的那么糟糕 文章可能稍微有点长，一定要耐心看完  o.0 RMI概念本来想把官方对RMI的概念贴在开头的，突然想了想开头就整臭长臭长的文字，谁顶得住。其实总的来说用一句话就可以概括。 ——RMI就是负责远程调用对象的。 既然提到了远程调用对象，肯定不是调用自己本地的对象。先给大家举个生活中的例子渗透一下概">
+<meta property="og:type" content="article">
+<meta property="og:title" content="没人比我更懂RMI(上)">
+<meta property="og:url" content="http://example.com/2023/08/15/%E6%B2%A1%E4%BA%BA%E6%AF%94%E6%88%91%E6%9B%B4%E6%87%82RMI/index.html">
+<meta property="og:site_name" content="Myloveguoguo">
+<meta property="og:description" content="前言参考文章1 参考文章2 每篇鸡汤： 万事开头难，当走出第一步你会发现，其实事情并没有你想象的那么糟糕 文章可能稍微有点长，一定要耐心看完  o.0 RMI概念本来想把官方对RMI的概念贴在开头的，突然想了想开头就整臭长臭长的文字，谁顶得住。其实总的来说用一句话就可以概括。 ——RMI就是负责远程调用对象的。 既然提到了远程调用对象，肯定不是调用自己本地的对象。先给大家举个生活中的例子渗透一下概">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/15/d44cd0f578220653df11f321d447754e.jpeg">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/ac810643b3fee5dc0b634589aead9868.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/a0bf10379a9a2c7243d62ec37bc3dfbc.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/29b6168e6a25f50276a83be349bb112a.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/14e6eaa1fe4227e4f3042388bcaa4226.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/fb7ffb82e926159f612ee86b09fe1375.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/5d354ed0a490a196835a99760736c99f.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/87491f64fb83fabec9a3550f3db294f0.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/a7d643ca12ae591e5a2d5ce162bcb082.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/40270ac31d21024b22b7533f89cae7cf.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/fe5daee7dd081ca4b65dd0297a57d198.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/fb5c313152ecffdc3d726a96ffbac350.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/35ca1e4c504ccb3eb11842cefa3693b9.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/990672b5cf8abcf482fd1ef484876b7c.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/8fa59bb843382c455bc289ea9961bef8.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/0a8a68872348aa8a648b486dd8d3fab3.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/13e97abbaaae5931552e813f3869daaf.md.png">
+<meta property="og:image" content="https://ice.frostsky.com/2023/08/16/df88fdc4cd57d758745a70045e5a1e02.md.png">
+<meta property="article:published_time" content="2023-08-15T11:16:20.000Z">
+<meta property="article:modified_time" content="2023-08-16T12:24:54.552Z">
+<meta property="article:author" content="Yuanyi">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://ice.frostsky.com/2023/08/15/d44cd0f578220653df11f321d447754e.jpeg">
+  
+  
+    <meta name="referrer" content="no-referrer-when-downgrade">
+  
+  
+  <title>没人比我更懂RMI(上) - Myloveguoguo</title>
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/twitter-bootstrap/4.6.1/css/bootstrap.min.css" />
+
+
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/hint.css/2.7.0/hint.min.css" />
+
+  <link  rel="stylesheet" href="https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+<!-- Do not modify the link that theme dependent icons -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_hj8rtnfg7um.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_lbnruvf0jn.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+
+  <link id="highlight-css" rel="stylesheet" href="/css/highlight.css" />
+  
+    <link id="highlight-css-dark" rel="stylesheet" href="/css/highlight-dark.css" />
+  
+
+
+
+  
+<link rel="stylesheet" href="/css/shubiao.css">
+
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    Fluid.ctx = Object.assign({}, Fluid.ctx)
+    var CONFIG = {"hostname":"example.com","root":"/","version":"1.9.5","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false,"scope":[]},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"left","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"code_language":{"enable":true,"default":"TEXT"},"copy_btn":true,"image_caption":{"enable":true},"image_zoom":{"enable":true,"img_url_replace":["",""]},"toc":{"enable":true,"placement":"right","headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"loading_img":"/img/loading.gif","onlypost":false,"offset_factor":2},"web_analytics":{"enable":true,"follow_dnt":true,"baidu":null,"google":{"measurement_id":null},"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null,"path":"window.location.pathname","ignore_local":false}},"search_path":"/local-search.xml","include_content_in_search":true};
+
+    if (CONFIG.web_analytics.follow_dnt) {
+      var dntVal = navigator.doNotTrack || window.doNotTrack || navigator.msDoNotTrack;
+      Fluid.ctx.dnt = dntVal && (dntVal.startsWith('1') || dntVal.startsWith('yes') || dntVal.startsWith('on'));
+    }
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+  
+
+  
+
+  
+    <!-- Google tag (gtag.js) -->
+    <script async>
+      if (!Fluid.ctx.dnt) {
+        Fluid.utils.createScript("https://www.googletagmanager.com/gtag/js?id=", function() {
+          window.dataLayer = window.dataLayer || [];
+          function gtag() {
+            dataLayer.push(arguments);
+          }
+          gtag('js', new Date());
+          gtag('config', '');
+        });
+      }
+    </script>
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+<body>
+  
+
+  <header>
+    
+
+<div class="header-inner" style="height: 70vh;">
+  <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <strong>Myloveguoguo</strong>
+    </a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                <span>首页</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                <span>归档</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                <span>分类</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                <span>标签</span>
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                <span>关于</span>
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" target="_self" href="javascript:;" data-toggle="modal" data-target="#modalSearch" aria-label="Search">
+              <i class="iconfont icon-search"></i>
+            </a>
+          </li>
+          
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" target="_self" href="javascript:;" aria-label="Color Toggle">
+              <i class="iconfont icon-dark" id="color-toggle-icon"></i>
+            </a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+  
+
+<div id="banner" class="banner" parallax=true
+     style="background: url('/img/default.png') no-repeat center center; background-size: cover;">
+  <div class="full-bg-img">
+    <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+      <div class="banner-text text-center fade-in-up">
+        <div class="h2">
+          
+            <span id="subtitle" data-typed-text="没人比我更懂RMI(上)"></span>
+          
+        </div>
+
+        
+          
+  <div class="mt-3">
+    
+    
+      <span class="post-meta">
+        <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+        <time datetime="2023-08-15 19:16" pubdate>
+          2023年8月15日 晚上
+        </time>
+      </span>
+    
+  </div>
+
+  <div class="mt-1">
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-chart"></i>
+        
+          5.2k 字
+        
+      </span>
+    
+
+    
+      <span class="post-meta mr-2">
+        <i class="iconfont icon-clock-fill"></i>
+        
+        
+        
+          44 分钟
+        
+      </span>
+    
+
+    
+    
+      
+        <span id="busuanzi_container_page_pv" style="display: none">
+          <i class="iconfont icon-eye" aria-hidden="true"></i>
+          <span id="busuanzi_value_page_pv"></span> 次
+        </span>
+        
+      
+    
+  </div>
+
+
+        
+      </div>
+
+      
+    </div>
+  </div>
+</div>
+
+</div>
+
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+
+    </div>
+
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div id="board">
+          <article class="post-content mx-auto">
+            <h1 id="seo-header">没人比我更懂RMI(上)</h1>
+            
+            
+              <div class="markdown-body">
+                
+                <h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p><a target="_blank" rel="noopener" href="https://www.oreilly.com/library/view/learning-java/1565927184/ch11s04.html">参考文章1</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/9261">参考文章2</a></p>
+<p><strong>每篇鸡汤：</strong></p>
+<p>万事开头难，当走出第一步你会发现，其实事情并没有你想象的那么糟糕</p>
+<p>文章可能稍微有点长，一定要耐心看完  <strong>o.0</strong></p>
+<h1 id="RMI概念"><a href="#RMI概念" class="headerlink" title="RMI概念"></a>RMI概念</h1><p>本来想把官方对RMI的概念贴在开头的，突然想了想开头就整臭长臭长的文字，谁顶得住。其实总的来说用一句话就可以概括。</p>
+<p>——RMI就是负责远程调用对象的。</p>
+<p>既然提到了远程调用对象，肯定不是调用自己本地的对象。先给大家举个生活中的例子渗透一下概念：</p>
+<p><img src="https://ice.frostsky.com/2023/08/15/d44cd0f578220653df11f321d447754e.jpeg" srcset="/img/loading.gif" lazyload alt="j"></p>
+<p>比如你在北京上学，你女神在西安，并且你想通过发送信息给女神告白。</p>
+<ol>
+<li><p>你想告白，得通过手机发送信息（相当于调用远程方法;但是调用方法之前会先创建<code>Stub(sun.rmi.registry.RegistryImpl_Stub)</code>）这个<code>stub</code>就相当于你的手机；也就是说，你并不能直接面对面告诉女神，而手机只是你传递信息的一种媒介，相当于是一个代理。</p>
+</li>
+<li><p>然后你给女神里发了个信息，在你刚呼出的一瞬间，手机会将你的呼出信号交给三大运营商（相当于<code>stub</code>会将<code>Remote</code>对象传递给<code>远程引用层(java.rmi.server.RemoteRef)</code>并创建<code>java.rmi.server.RemoteCall(远程调用)</code>对象。）三大运营商会帮你找到你的女神。</p>
+</li>
+<li><p>运营商在收到你的信号后会将你这个呼出的动作转换成其他形式的信号进行传输（<code>RemoteCall</code>序列化<code>RMI服务名称</code>、<code>Remote</code>对象。）</p>
+</li>
+<li><p>然后运营商通过自己架设的线路进行通信（<code>RMI客户端</code>的<code>远程引用层</code>传输<code>RemoteCall</code>序列化后的请求信息通过<code>Socket</code>连接的方式传输到<code>RMI服务端</code>的<code>远程引用层</code>。）</p>
+</li>
+<li><p>在找到对方之后，对方手机会立刻响铃（<code>RMI服务端</code>的<code>远程引用层(sun.rmi.server.UnicastServerRef)</code>收到请求会请求传递给<code>Skeleton(sun.rmi.registry.RegistryImpl_Skel#dispatch)</code>；这个<code>Skeleton</code>就相当于女神的手机）</p>
+</li>
+<li><p>此时对方手机会将之前用其他形式传输的信号，转变为人能看懂的文字（<code>Skeleton</code>调用<code>RemoteCall</code>反序列化<code>RMI客户端</code>传过来的序列化。）</p>
+</li>
+<li><p>对方查看手机(Skeleton)信息，并用手机给你进行回复：“<strong>你是个好人</strong>”（<code>Skeleton</code>处理客户端请求：<code>bind</code>、<code>list</code>、<code>lookup</code>、<code>rebind</code>、<code>unbind</code>，如果是<code>lookup</code>则查找<code>RMI服务名</code>绑定的接口对象，序列化该对象并通过<code>RemoteCall</code>传输到客户端。）</p>
+</li>
+<li><p>你收到信息，并看到是女神给你的回复，非常激动！（<code>RMI客户端</code>反序列化服务端结果，获取远程对象的引用）</p>
+</li>
+<li><p>你双击信息打开进一步查看内容（<code>RMI客户端</code>调用远程方法，<code>RMI服务端</code>反射调用<code>RMI服务实现类</code>的对应方法并序列化执行结果返回给客户端。）</p>
+</li>
+<li><p>结果看到女神送给你的“好人卡”（<code>RMI客户端</code>反序列化<code>RMI</code>远程方法调用结果。）</p>
+</li>
+</ol>
+<p>在代码实现之前我们还需要明白一个在RMI中扮演着重要角色的<strong>”注册中心“</strong>，他在服务端创建。</p>
+<p>我们知道java远程对象是基于socket来进行传输的，有socket就要有端口。</p>
+<p>举个例子：</p>
+<p>服务端现在有一个名为A的远程对象。现在你是客户端，你并不知道服务端把这个A开放在对应的哪个端口。就算你知道了A的开放端口。服务其上还有B、C、D……..难道你要记住每个远程对象的端口吗？很明显这是不现实的。</p>
+<p>那么这个时候，就要用到我们的注册中心。他的作用就是将自己绑定在服务端的某个端口(默认1099)这样你只需要记住一个端口，他会帮我们记住这100个远程对象对应的开放端口。当客户端进行调用的时候，只需要告诉注册中心，我要找A，那么注册中心就会告诉你A所对应的端口。有点像交换机和路由器的原理。</p>
+<p>在了解这个重要概念以后，我们再来接着往下看RMI具体是如何实现的。</p>
+<p>RMI具体代码实现如下：</p>
+<p><strong>服务端代码：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.rmi.Remote;<br><span class="hljs-keyword">import</span> java.rmi.RemoteException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">IRemoteObj</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Remote</span> &#123;<br>    <span class="hljs-comment">//这个接口定义着你都能调用服务端的什么方法。需要抛出 RemoteException</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">sayHello</span><span class="hljs-params">(String keywords)</span> <span class="hljs-keyword">throws</span> RemoteException;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.rmi.RemoteException;<br><span class="hljs-keyword">import</span> java.rmi.server.UnicastRemoteObject;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RemoteObjImpl</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">UnicastRemoteObject</span> <span class="hljs-keyword">implements</span> <span class="hljs-title class_">IRemoteObj</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-title function_">RemoteObjImpl</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> RemoteException&#123;<br>        <span class="hljs-comment">//UnicastRemoteObject.exportObject(this,0);  //如果不继承UnicastRemoteObject就需要手动导出</span><br>    &#125;<br><br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">sayHello</span><span class="hljs-params">(String keywords)</span>&#123;<br>        <span class="hljs-type">String</span> <span class="hljs-variable">upKeywords</span> <span class="hljs-operator">=</span> keywords.toUpperCase();<br>        System.out.println(upKeywords);<br>        <span class="hljs-keyword">return</span> upKeywords;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.rmi.AlreadyBoundException;<br><span class="hljs-keyword">import</span> java.rmi.RemoteException;<br><span class="hljs-keyword">import</span> java.rmi.registry.LocateRegistry;<br><span class="hljs-keyword">import</span> java.rmi.registry.Registry;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RMIServer</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> RemoteException, AlreadyBoundException &#123;<br>        <span class="hljs-type">IRemoteObj</span> <span class="hljs-variable">remoteObj</span> <span class="hljs-operator">=</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">RemoteObjImpl</span>(); <span class="hljs-comment">//创建远程对象</span><br>        <span class="hljs-type">Registry</span> <span class="hljs-variable">r</span> <span class="hljs-operator">=</span> LocateRegistry.createRegistry(<span class="hljs-number">1099</span>); <span class="hljs-comment">//创建注册中心</span><br>        r.bind(<span class="hljs-string">&quot;remoteObj&quot;</span>,remoteObj); <span class="hljs-comment">//绑定远程对象</span><br>        System.out.println(<span class="hljs-string">&quot;server is OK&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p><strong>客户端代码：</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.rmi.Remote;<br><span class="hljs-keyword">import</span> java.rmi.RemoteException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">interface</span> <span class="hljs-title class_">IRemoteObj</span> <span class="hljs-keyword">extends</span> <span class="hljs-title class_">Remote</span> &#123;<br>    <span class="hljs-keyword">public</span> String <span class="hljs-title function_">sayHello</span><span class="hljs-params">(String keywords)</span> <span class="hljs-keyword">throws</span> RemoteException;<br>&#125;<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">    是不是有点眼熟，你可能会有疑问：为什么客户端还要创建一个和服务端相同的接口？</span><br><span class="hljs-comment">    通过共享接口定义，RMI 框架能够在编译时进行类型检查，确保方法调用的正确性。同时，RMI 框架能够自动生成代理对象和存根对象，它们负责处理远程方法的序列化、网络传输和反序列化等细节。</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs java"><br><span class="hljs-keyword">import</span> java.net.MalformedURLException;<br><span class="hljs-keyword">import</span> java.rmi.Naming;<br><span class="hljs-keyword">import</span> java.rmi.NotBoundException;<br><span class="hljs-keyword">import</span> java.rmi.RemoteException;<br><span class="hljs-keyword">import</span> java.rmi.registry.LocateRegistry;<br><span class="hljs-keyword">import</span> java.rmi.registry.Registry;<br><br><span class="hljs-keyword">public</span> <span class="hljs-keyword">class</span> <span class="hljs-title class_">RMIClient</span> &#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> RemoteException, NotBoundException, MalformedURLException &#123;<br><span class="hljs-comment">//写法一：</span><br>        <span class="hljs-comment">//获取注册中心</span><br>        <span class="hljs-type">Registry</span> <span class="hljs-variable">registry</span> <span class="hljs-operator">=</span> LocateRegistry.getRegistry(<span class="hljs-string">&quot;192.168.56.1&quot;</span>,<span class="hljs-number">1099</span>);<br>        <span class="hljs-comment">//查找远程对象 </span><br>        <span class="hljs-type">IRemoteObj</span> <span class="hljs-variable">remoteObj</span> <span class="hljs-operator">=</span> (IRemoteObj) registry.lookup(<span class="hljs-string">&quot;remoteObj&quot;</span>);<br>        <span class="hljs-comment">//调用远程方法</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">out</span> <span class="hljs-operator">=</span> remoteObj.sayHello(<span class="hljs-string">&quot;hello&quot;</span>);<br>        System.out.println(out);<br><span class="hljs-comment">//写法二：</span><br>        <span class="hljs-comment">//直接查找远程对象</span><br>        <span class="hljs-type">IRemoteObj</span> <span class="hljs-variable">remoteObj1</span> <span class="hljs-operator">=</span> (IRemoteObj) Naming.lookup(<span class="hljs-string">&quot;rmi://127.0.0.1:1088/remoteObj&quot;</span>);<br>        <span class="hljs-comment">//调用远程方法</span><br>        <span class="hljs-type">String</span> <span class="hljs-variable">out1</span> <span class="hljs-operator">=</span> remoteObj1.sayHello(<span class="hljs-string">&quot;hi&quot;</span>);<br>        System.out.println(out1);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>首先在服务端创建远程对象的时候”<code>IRemoteObj remoteObj = new RemoteObjImpl();</code>“这一句代码，我们来分析一下他都干了什么</p>
+<ol>
+<li>因为我们继承了<code>UnicastRemoteObject()</code>，所以首先会来到他父类的构造方法处并进行赋值<code>0</code>。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/ac810643b3fee5dc0b634589aead9868.png" srcset="/img/loading.gif" lazyload alt="i"></p>
+<ol start="2">
+<li>随后会将传入的参数赋值给<code>port</code>，相当于给<code>port</code>传入默认值0，如果传入0后续会将远程对象发布在随机的端口上。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/a0bf10379a9a2c7243d62ec37bc3dfbc.png" srcset="/img/loading.gif" lazyload alt="image-20230816183938605"></p>
+<ol start="3">
+<li>这也就是是我们之前代码中如果继承了这个类就不需要再次调用，如果不继承则需要手动调用</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/29b6168e6a25f50276a83be349bb112a.png" srcset="/img/loading.gif" lazyload alt="image-20230816184413215"></p>
+<ol start="4">
+<li>跟进<code>UnicastServerRef()</code></li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/14e6eaa1fe4227e4f3042388bcaa4226.png" srcset="/img/loading.gif" lazyload alt="image-20230816184541021"></p>
+<ol start="5">
+<li>在进行跟进<code>LiveRef()</code>因为他会调用他的构造方法，所以我们直接看构造方法</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/fb7ffb82e926159f612ee86b09fe1375.png" srcset="/img/loading.gif" lazyload alt="image-20230816184721936"></p>
+<p>第一个参数和最后一个参数很好理解，中间的这个参数是什么呢？我们还需要再次跟进</p>
+<ol start="6">
+<li>我们可以看到它的返回值是<code>TCPEndpoint</code>所以很明显这里是处理网络请求的类。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/5d354ed0a490a196835a99760736c99f.png" srcset="/img/loading.gif" lazyload alt="image-20230816184834796"></p>
+<ol start="7">
+<li>跟进发现，接收两个参数一个<code>host</code>一个<code>port</code>。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/87491f64fb83fabec9a3550f3db294f0.png" srcset="/img/loading.gif" lazyload alt="image-20230816184951738"></p>
+<ol start="8">
+<li>然后我们跟到<code>LiveRef</code>发现他恰好就接收这三个参数，而且从下方参数信息也可以看到它接收到了对应的参数。到这一直是封装封装。而真正处理网络请求的就是<code>TCPTransport</code>，并最后将的结果放入<code>LiveRef</code></li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/a7d643ca12ae591e5a2d5ce162bcb082.png" srcset="/img/loading.gif" lazyload alt="image-20230816185301173"></p>
+<ol start="9">
+<li>之后会创建代理，细心的同学已经发现了，为什么服务端创建了stub？stub不是客户端的代理吗？</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/40270ac31d21024b22b7533f89cae7cf.png" srcset="/img/loading.gif" lazyload alt="image-20230816185657657"></p>
+<p>​		解答：stub是客户端的代理没错，但是客户端是通过stub来进行远程调用的。他整个的流程是先在服务端创建好stub，然后放在注册中心，客户端创建stub，然后去注册中心找对应的server端stub，找到以后再用server端的stub来操作server端Skeletion。</p>
+<ol start="10">
+<li>之后会创建他的类加载器、接口、调用处理器，而调用处理器里面的值还是之前的<code>LiveRef</code></li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/fe5daee7dd081ca4b65dd0297a57d198.md.png" srcset="/img/loading.gif" lazyload alt="image-20230816190430758"></p>
+<ol start="11">
+<li>可以看到这里已经把stub的端口从之前的初始值<code>0</code>变成了随机的端口，发布在注册中心，并记录server端。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/fb5c313152ecffdc3d726a96ffbac350.png" srcset="/img/loading.gif" lazyload alt="image-20230816190840205"></p>
+<p>这里只是简单的跟一下服务端原创对象的创建过程，让大家清楚的看到，服务端在创建对象的时候，实际上都干了什么。具体细节感兴趣的同学可以自己跟一下。</p>
+<p>接下来我们再跟一下创建注册中心<code>Registry r = LocateRegistry.createRegistry(1099);</code>看看他都干了什么</p>
+<ol>
+<li>创建注册中心，接收参数端口。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/35ca1e4c504ccb3eb11842cefa3693b9.png" srcset="/img/loading.gif" lazyload alt="image-20230816191650239"></p>
+<ol start="2">
+<li>跟进，发现底层创建了<code>LiveRef</code>和<code>UnicastServerRef</code>。服务端创建原创对象的时候也是这样的操作。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/990672b5cf8abcf482fd1ef484876b7c.md.png" srcset="/img/loading.gif" lazyload alt="image-20230816191957806"></p>
+<ol start="3">
+<li>唯一的不同是他创建的这个远程对象是永久的远程对象，而我们之前自定义的远程对象是一个临时的对象。可以看到，后面还是在服务端创建stub给客户端来进行调用。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/8fa59bb843382c455bc289ea9961bef8.png" srcset="/img/loading.gif" lazyload alt="image-20230816192249999"></p>
+<ol start="4">
+<li>可以看到注册中心创建的stub他是由<code>froname</code>创建的，之前创建远程对象的stub实际上是靠动态代理的调用处理器创建的。他们两个的创建方式不一样。</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/0a8a68872348aa8a648b486dd8d3fab3.png" srcset="/img/loading.gif" lazyload alt="image-20230816192630687"></p>
+<ol start="5">
+<li>之后会将创建好的远程对象放进<code>table</code>当中</li>
+</ol>
+<p><img src="https://ice.frostsky.com/2023/08/16/13e97abbaaae5931552e813f3869daaf.md.png" srcset="/img/loading.gif" lazyload alt="image-20230816193458856"></p>
+<p>然后服务端最后一步将远程对象绑定在注册中心这一步比较简单，我们就不跟了。(不是我懒，是今天天气不好，不适合调试)</p>
+<p>至此我们把服务端整个RMI的流程简单分析了一遍，现在大家都应该清楚他们每一步到底干了什么。</p>
+<h1 id="RMI反序列化"><a href="#RMI反序列化" class="headerlink" title="RMI反序列化"></a>RMI反序列化</h1><p>从RMI设计角度来讲，基本分为三层架构模式来实现RMI，分别为<strong>RMI服务端</strong>，<strong>RMI客户端</strong>和<strong>RMI注册中心</strong>，如下图所示。</p>
+<p><img src="https://ice.frostsky.com/2023/08/16/df88fdc4cd57d758745a70045e5a1e02.md.png" srcset="/img/loading.gif" lazyload alt="image-20230816182716313"></p>
+<p>他们之间可以相互两两通信。由于RMI在网络传输数据是需要对数据进行序列化和反序列化的。那么这个时候我们其实就可以利用他反序列化从而进行利用。</p>
+<p>这里先提一嘴，我下一篇文章在出利用吧，主要不是我懒，是我怕文章太长，使得大家阅读枯燥无味。</p>
+
+                
+              </div>
+            
+            <hr/>
+            <div>
+              <div class="post-metas my-3">
+  
+    <div class="post-meta mr-3 d-flex align-items-center">
+      <i class="iconfont icon-category"></i>
+      
+
+<span class="category-chains">
+  
+  
+    
+      <span class="category-chain">
+        
+  <a href="/categories/java/" class="category-chain-item">java</a>
+  
+  
+
+      </span>
+    
+  
+</span>
+
+    </div>
+  
+  
+</div>
+
+
+              
+  
+
+  <div class="license-box my-3">
+    <div class="license-title">
+      <div>没人比我更懂RMI(上)</div>
+      <div>http://example.com/2023/08/15/没人比我更懂RMI/</div>
+    </div>
+    <div class="license-meta">
+      
+        <div class="license-meta-item">
+          <div>作者</div>
+          <div>Yuanyi</div>
+        </div>
+      
+      
+        <div class="license-meta-item license-meta-date">
+          <div>发布于</div>
+          <div>2023年8月15日</div>
+        </div>
+      
+      
+      
+        <div class="license-meta-item">
+          <div>许可协议</div>
+          <div>
+            
+              
+              
+                <a class="print-no-link" target="_blank" href="https://creativecommons.org/licenses/by/4.0/">
+                  <span class="hint--top hint--rounded" aria-label="BY - 署名">
+                    <i class="iconfont icon-by"></i>
+                  </span>
+                </a>
+              
+            
+          </div>
+        </div>
+      
+    </div>
+    <div class="license-icon iconfont"></div>
+  </div>
+
+
+
+              
+                <div class="post-prevnext my-3">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2023/08/22/%E6%B2%A1%E4%BA%BA%E6%AF%94%E6%88%91%E6%9B%B4%E6%87%82RMI2/" title="没人比我更懂RMI(中)">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">没人比我更懂RMI(中)</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2023/07/21/Smartbi%E5%86%85%E7%BD%AE%E7%94%A8%E6%88%B7%E7%BB%95%E8%BF%87%E6%B5%85%E6%9E%90/" title="Smartbi内置用户绕过浅析">
+                        <span class="hidden-mobile">Smartbi内置用户绕过浅析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+          </article>
+        </div>
+      </div>
+    </div>
+
+    <div class="side-col d-none d-lg-block col-lg-2">
+      
+  <aside class="sidebar" style="margin-left: -1rem">
+    <div id="toc">
+  <p class="toc-header">
+    <i class="iconfont icon-list"></i>
+    <span>目录</span>
+  </p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+
+
+  </aside>
+
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+  
+
+
+
+
+
+
+
+    
+
+    
+      <a id="scroll-top-button" aria-label="TOP" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v" for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+    
+
+    
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+  
+    <div class="footer-content">
+       <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+    </div>
+  
+  
+  
+  
+</div>
+
+  </footer>
+
+  <!-- Scripts -->
+  
+  <script  src="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://lib.baomitu.com/nprogress/0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://lib.baomitu.com/jquery/3.6.4/jquery.min.js" ></script>
+<script  src="https://lib.baomitu.com/twitter-bootstrap/4.6.1/js/bootstrap.min.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+
+  <script  src="https://lib.baomitu.com/typed.js/2.0.12/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var subtitle = document.getElementById('subtitle');
+      if (!subtitle || !typing) {
+        return;
+      }
+      var text = subtitle.getAttribute('data-typed-text');
+      
+        typing(text);
+      
+    })(window, document);
+  </script>
+
+
+
+
+  
+    <script  src="/js/img-lazyload.js" ></script>
+  
+
+
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/tocbot/4.20.1/tocbot.min.js', function() {
+    var toc = jQuery('#toc');
+    if (toc.length === 0 || !window.tocbot) { return; }
+    var boardCtn = jQuery('#board-ctn');
+    var boardTop = boardCtn.offset().top;
+
+    window.tocbot.init(Object.assign({
+      tocSelector     : '#toc-body',
+      contentSelector : '.markdown-body',
+      linkClass       : 'tocbot-link',
+      activeLinkClass : 'tocbot-active-link',
+      listClass       : 'tocbot-list',
+      isCollapsedClass: 'tocbot-is-collapsed',
+      collapsibleClass: 'tocbot-is-collapsible',
+      scrollSmooth    : true,
+      includeTitleTags: true,
+      headingsOffset  : -boardTop,
+    }, CONFIG.toc));
+    if (toc.find('.toc-list-item').length > 0) {
+      toc.css('visibility', 'visible');
+    }
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('tocbot' in window) {
+        tocbot.refresh();
+        var toc = jQuery('#toc');
+        if (toc.length === 0 || !tocbot) {
+          return;
+        }
+        if (toc.find('.toc-list-item').length > 0) {
+          toc.css('visibility', 'visible');
+        }
+      }
+    });
+  });
+</script>
+
+
+  <script src=https://lib.baomitu.com/clipboard.js/2.0.11/clipboard.min.js></script>
+
+  <script>Fluid.plugins.codeWidget();</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/anchor-js/4.3.1/anchor.min.js', function() {
+    window.anchors.options = {
+      placement: CONFIG.anchorjs.placement,
+      visible  : CONFIG.anchorjs.visible
+    };
+    if (CONFIG.anchorjs.icon) {
+      window.anchors.options.icon = CONFIG.anchorjs.icon;
+    }
+    var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+    var res = [];
+    for (var item of el) {
+      res.push('.markdown-body > ' + item.trim());
+    }
+    if (CONFIG.anchorjs.placement === 'left') {
+      window.anchors.options.class = 'anchorjs-link-left';
+    }
+    window.anchors.add(res.join(', '));
+
+    Fluid.events.registerRefreshCallback(function() {
+      if ('anchors' in window) {
+        anchors.removeAll();
+        var el = (CONFIG.anchorjs.element || 'h1,h2,h3,h4,h5,h6').split(',');
+        var res = [];
+        for (var item of el) {
+          res.push('.markdown-body > ' + item.trim());
+        }
+        if (CONFIG.anchorjs.placement === 'left') {
+          anchors.options.class = 'anchorjs-link-left';
+        }
+        anchors.add(res.join(', '));
+      }
+    });
+  });
+</script>
+
+
+  
+<script>
+  Fluid.utils.createScript('https://lib.baomitu.com/fancybox/3.5.7/jquery.fancybox.min.js', function() {
+    Fluid.plugins.fancyBox();
+  });
+</script>
+
+
+  <script>Fluid.plugins.imageCaption();</script>
+
+  <script  src="/js/local-search.js" ></script>
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  
+<script src="/js/shubiao.js"></script>
+<script src="/js/Hcaidai.js"></script>
+
+
+
+<!-- 主题的启动项，将它保持在最底部 -->
+<!-- the boot of the theme, keep it at the bottom -->
+<script  src="/js/boot.js" ></script>
+
+
+  
+
+  <noscript>
+    <div class="noscript-warning">博客在允许 JavaScript 运行的环境下浏览效果更佳</div>
+  </noscript>
+</body>
+</html>
